@@ -32,6 +32,8 @@
     "validator": "^5.5.0"
   },
   "devDependencies": {
-    "bluebird": "^3.4.1"
+    "bluebird": "^3.4.1",
+    "chai": "^3.5.0",
+    "chai-http": "^3.0.0"
   }
 }

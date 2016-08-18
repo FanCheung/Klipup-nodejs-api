@@ -10,8 +10,10 @@
   "exclude": [
   ],
   "files": [
+"test.ts",
     "typings/index.d.ts",
     "app.ts",
+    "api.test.ts",
     "core/CONFIG.ts",
     "core/Db.ts",
     "core/Error.ts",
