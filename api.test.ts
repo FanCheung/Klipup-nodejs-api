@@ -19,7 +19,8 @@ describe('Db tests', () => {
 })
 
 describe('Auth api', function() {
-    it('Should return unauthorize sta  tus w i th i nv alid login', (done) => {
+
+it('Should return unauthorize sta  tus w i th i nv alid login', (done) => {
         api.post('/api/login').send({ username: '', password: '' }).expect(401, done)
     })
 

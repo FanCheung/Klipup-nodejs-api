@@ -85,7 +85,7 @@ class AuthRoute {
         //response coming from passport strategy
         passport.authenticate('local', { session: false }, function(err, user, info) {
             if (!user)
-              return new JsonRes(res).fail({ message: 'username or password no match' }, 401)
+                return new JsonRes(res).fail({ message: 'username or password no match' }, 401)
 
             return new JsonRes(res).success({ uid: user._id, token: user.token })
         })(req, res, next);
@@ -172,7 +172,10 @@ class AuthRoute {
             })
     }
 
-    public createPassword(req, res, next) { }
+    public createAccount(req, res, next) {
+console.log(req.body)
+        return new JsonRes(res).success({ message: 'hello' })
+    }
 
     public authenticateAcl(req, res, next) {
         if (req.params.uid && req.params.uid == AuthModel.getCurrentUser())
