@@ -24,7 +24,60 @@ class AuthModel {
     public issueToken(user, expireIn = this._expireIn) {
         return jwt.sign(user, CONFIG.AUTH.SECRET_KEY, { expiresIn: expireIn })
     }
+/**
+ * Passport facebook strategy
+ * @return {[type]} [description]
+ */
+    private _useFacebook() {
+        // TODO move to auth model
+        let Strategy = FacebookStrategy.Strategy
+        passport.use(new Strategy(CONFIG.AUTH.FACEBOOK
+            , (accessToken, refreshToken, profile, done) => {
+                let json = profile._json
+                let socialAccount = ''
+                try {
+                    socialAccount = JSON.stringify(profile._json)
+                } catch (e) {
+                    throw new Error('Parsing error')
+                }
 
+                // create an user account if not exist
+                UserModel.findOne({
+                    'email': json.email
+                }).then((result) => {
+                    //if no user found create a new user
+                    if (!result) {
+                        let token = AuthModel.issueToken(profile)
+                        new UserModel({
+                            'display_name': json.name,
+                            'email': json.email,
+                            'social_account': socialAccount,
+                            'thumb': json.picture.data.url,
+                            'locale': json.locale
+                        }).addOne().then((result) => {
+                            // TODO move to Auth model
+                            let token = AuthModel.issueToken({ sub: result._id })
+                            this.saveToken(result, token)
+                        }).catch((error) => {
+                            console.log('error :', error)
+                        })
+                        return done(null, profile)
+                        // when there are existing user
+                    } else {
+                        // TODO move to Auth model
+                        let token = AuthModel.issueToken({ sub: result._id })
+                        this.saveToken(result, token)
+                        return done(null, result)
+                    }
+
+
+                }).catch((error) => {
+                    console.log(error)
+                    done(error, profile)
+                })
+            })
+        )
+    }
     /**
      * [getLocalStrategy description]
      * @return {Promise} [description]
@@ -117,6 +170,10 @@ class AuthModel {
         }
     }
 
+
+public createAccount(password){
+//can get the currentuser from current user
+}
     /**
      * Send reset password email
      * @param  {[type]} email='' [description]
@@ -214,7 +271,7 @@ class AuthModel {
     public setCurrentUser(uid: String): Promise<any> {
         return UserModel.findOne({ _id: uid }).then((result) => {
             if (result) {
-                this._currentUser = result._id
+                this._currentUser = result
                 console.warn('thiscurrent user', this._currentUser)
             }
             else
