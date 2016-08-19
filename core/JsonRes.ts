@@ -47,11 +47,11 @@ class JsonRes {
             code: 500,
             message: '',
             //a broad context of where the error is found e.g Add user
-            domain: '',
+            // domain: '',
             //unique error code can be used for i18n translation eg. error.user.not_found
-            reason: '',
+            // reason: '',
             //human readable error message eg. User not found
-            errors: null
+            // errors: null
         }
     }
     private _res
@@ -85,9 +85,8 @@ class JsonRes {
         // set http status code
         this._res.status(statusCode)
         let _schema = this._schema
-
+        console.log(obj.message)
         delete _schema.data
-
         _schema.error.message = obj.message
         if (obj.code)
             _schema.error.code = obj.code
@@ -95,7 +94,8 @@ class JsonRes {
             _schema.error.reason = obj.reason
         if (obj.errors)
             _schema.error.errors = obj.errors
-        console.log(_schema)
+        _schema.error.code = statusCode
+
         return this._res.json(_schema)
     }
 }

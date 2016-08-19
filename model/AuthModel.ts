@@ -74,8 +74,7 @@ class AuthModel {
         //TODO validate password and email here
         if (!(hashedPassword && email))
             return Promise.reject(new Error('password or email no good'))
-
-        UserModel.findOne({ email: email }).then((user) => {
+        return UserModel.findOne({ email: email }).then((user) => {
             if (user)
                 return Promise.reject(new Error('User already exist'))
             return this.getEmailHash()

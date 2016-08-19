@@ -85,7 +85,8 @@ class AuthRoute {
         //response coming from passport strategy
         passport.authenticate('local', { session: false }, function(err, user, info) {
             if (!user)
-                return new JsonRes(res).fail({ messsage: 'username or password no match' }, 401)
+              return new JsonRes(res).fail({ message: 'username or password no match' }, 401)
+
             return new JsonRes(res).success({ uid: user._id, token: user.token })
         })(req, res, next);
     }
@@ -98,7 +99,6 @@ class AuthRoute {
      * @return {[type]}        [description]
      */
     public register(req, res, next) {
-
         // Consider some mapping, variable name may just change
         AuthModel.register(req.body.user_email, req.body.user_password).then((data) => {
             new JsonRes(res).success({ message: 'successfully create account and sent email' })

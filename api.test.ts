@@ -1,7 +1,8 @@
 import * as  chai from 'chai'
-let should = chai.should()
 let supertest = require('supertest')
 let api = supertest('http://localhost:5000');
+
+let should = chai.should()
 let assert = chai.assert
 let expect = chai.expect
 var MongoClient = require('mongodb').MongoClient
@@ -10,7 +11,7 @@ var MongoClient = require('mongodb').MongoClient
 describe('Db tests', () => {
     it('should not return error object', (done) => {
         MongoClient.connect('mongodb://localhost:27017/klipup', function(err, db) {
-            assert.equal(err, null)
+            expect(err).to.equal(null)
             db.close()
             done()
         })
@@ -22,11 +23,14 @@ describe('Auth api', function() {
         api.post('/api/login').send({ username: '', password: '' }).expect(401, done)
     })
 
-    it('should return error message w  hen p a sswo rd  incorrrect ', (done) => {
-        api.post('/api/login').send({ dkadf: 'akdf' }).expect(401, done)
+    it('Should register a new user', (done) => {
+        api.post('/api/register').send({ user_email: 'test@test.com', user_password: 'hello' }).expect(200, done)
     })
 
-    it('should return error message when username incorrrect', (done) => {
-        api.post('/api/login').send({ dkadf: 'akdf' }).expect(401, done)
+    it('Should have a Authorisation header', (done) => {
+
+    })
+    it('Should accept a valid password', (done) => {
+
     })
 })
