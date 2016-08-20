@@ -170,9 +170,34 @@ class AuthModel {
         }
     }
 
+    /**
+     * [createAccount description]
+     * @param  {[type]} password [description]
+     * @param  {[type]} token    [description]
+     * @return {[type]}          [description]
+     */
+    public createAccount(password, token) {
 
-    public createAccount(password) {
-        //can get the currentuser from current user
+        // TODO see whether we should enforce user to have password
+        //TODO validate password weakness length etc
+        if (!password) return Promise.reject(new Error('Password invalid'))
+        if (!token) return Promise.reject(new Error('Missing Token'))
+
+        return this.verifyToken(token).then((uid) => {
+            return UserModel.findOne({ _id: uid })
+        }).then((result) => {
+
+            if (!result)
+                return Promise.reject(new Error('User not found'))
+//password alrewady exist should reject
+            if (result.password)
+                return Promise.reject(new Error('Password already exist'))
+
+            result.password = this.getPasswordHash(password)
+            return result.save()
+        }).then((user) => {
+            return user
+        })
     }
     /**
      * Send reset password email
@@ -258,6 +283,11 @@ class AuthModel {
         return obj
 
     }
+    /**
+     * Check if timestamp expires
+     * @param  {number} timeStamp [description]
+     * @return {[type]}           [description]
+     */
     public isExpired(timeStamp: number) {
         return Date.now() > timeStamp
     }
@@ -320,6 +350,28 @@ class AuthModel {
             return false
     }
 
+    /**
+     * [verify description]
+     * @param  {[type]} token [description]
+     * @return {[type]}       [description]
+     */
+    public verifyToken(token) {
+        return new Promise((resolve, reject) => {
+            jwt.verify(token, CONFIG.AUTH.SECRET_KEY, function(err, payload) {
+                if (err) {
+                    // return Promise.reject(new Error(err))
+                    return reject(new Error(err))
+                } else
+                    // return userid
+                    return resolve(payload.sub)
+            })
+        })
+    }
+
+    /**
+       * Extract token from authorization header
+       * @return {Promise} [description]
+       */
     public extractToken(req): Promise<any> {
         return new Promise((resolve, reject) => {
             let bearerHeader = req.headers["authorization"]

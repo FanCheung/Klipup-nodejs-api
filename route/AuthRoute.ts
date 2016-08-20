@@ -19,11 +19,11 @@ class AuthRoute {
         this.setUpStrategy()
     }
 
-/**
- * [setUpStrategy description]
- * @return {[type]} [description]
- */
-public setUpStrategy() {
+    /**
+     * [setUpStrategy description]
+     * @return {[type]} [description]
+     */
+    public setUpStrategy() {
         passport.use(AuthModel.getFacebookStrategy())
         passport.use(AuthModel.getLocalStrategy())
     }
@@ -60,15 +60,7 @@ public setUpStrategy() {
         })
     }
 
-    /**
-     * Save Token to db for a found user
-     * @param result:mongoose model
-     * @param token
-     */
-    public saveToken(result, token: String) {
-        result.token = token
-        result.save()
-    }
+
 
     //middleware
     public authenticateToken(req, res, next) {
@@ -125,9 +117,29 @@ public setUpStrategy() {
             })
     }
 
+/**
+ * Create Account after social login ask to input password
+ * @param  {[type]}   req  [description]
+ * @param  {[type]}   res  [description]
+ * @param  {Function} next [description]
+ * @return {[type]}        [description]
+ */
     public createAccount(req, res, next) {
-        console.log(req.body)
-        return new JsonRes(res).success({ message: 'hello' })
+        AuthModel.extractToken(req).then((token) => {
+            return token
+        }).then((token) => {
+            return AuthModel.createAccount(req.body.user_password, token)
+        }).then((user) => {
+            return new JsonRes(res).success({
+                uid: user._id,
+                display_name: user.display_name,
+                email: user.email,
+                thumb: user.thumb,
+                message: 'hello'
+            })
+        }).catch((e) => {
+            return new JsonRes(res).fail({ message: e.message })
+        })
     }
 
     public authenticateAcl(req, res, next) {
