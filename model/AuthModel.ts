@@ -2,6 +2,7 @@ import * as jwt from 'jsonwebtoken'
 import * as CONFIG from '../core/CONFIG'
 import * as UserModel from '../model/UserModel'
 import * as LocalStrategy from 'passport-local'
+import * as FacebookStrategy from 'passport-facebook'
 import * as passport from 'passport'
 import * as validator from 'validator'
 
@@ -24,59 +25,58 @@ class AuthModel {
     public issueToken(user, expireIn = this._expireIn) {
         return jwt.sign(user, CONFIG.AUTH.SECRET_KEY, { expiresIn: expireIn })
     }
-/**
- * Passport facebook strategy
- * @return {[type]} [description]
- */
-    private _useFacebook() {
+
+
+    /**
+     * Passport facebook strategy
+     * @return {[type]} [description]
+     */
+    public getFacebookStrategy() {
         // TODO move to auth model
-        let Strategy = FacebookStrategy.Strategy
-        passport.use(new Strategy(CONFIG.AUTH.FACEBOOK
-            , (accessToken, refreshToken, profile, done) => {
-                let json = profile._json
-                let socialAccount = ''
-                try {
-                    socialAccount = JSON.stringify(profile._json)
-                } catch (e) {
-                    throw new Error('Parsing error')
+        return new FacebookStrategy.Strategy(CONFIG.AUTH.FACEBOOK, (accessToken, refreshToken, profile, done) => {
+            let json = profile._json
+            let socialAccount = ''
+            try {
+                socialAccount = JSON.stringify(profile._json)
+            } catch (e) {
+                throw new Error('Parsing error')
+            }
+
+            // create an user account if not exist
+            return UserModel.findOne({
+                'email': json.email
+            }).then((result) => {
+                //if no user found create a new user
+                if (!result) {
+                    let token = this.issueToken(profile)
+                    new UserModel({
+                        'display_name': json.name,
+                        'email': json.email,
+                        'social_account': socialAccount,
+                        'thumb': json.picture.data.url,
+                        'locale': json.locale
+                    }).addOne().then((result) => {
+                        // TODO move to Auth model
+                        let token = this.issueToken({ sub: result._id })
+                        this.saveToken(result, token)
+                    }).catch((error) => {
+                        console.log('error :', error)
+                    })
+                    return done(null, profile)
+                    // when there are existing user
+                } else {
+                    // TODO move to Auth model
+                    let token = this.issueToken({ sub: result._id })
+                    this.saveToken(result, token)
+                    return done(null, result)
                 }
 
-                // create an user account if not exist
-                UserModel.findOne({
-                    'email': json.email
-                }).then((result) => {
-                    //if no user found create a new user
-                    if (!result) {
-                        let token = AuthModel.issueToken(profile)
-                        new UserModel({
-                            'display_name': json.name,
-                            'email': json.email,
-                            'social_account': socialAccount,
-                            'thumb': json.picture.data.url,
-                            'locale': json.locale
-                        }).addOne().then((result) => {
-                            // TODO move to Auth model
-                            let token = AuthModel.issueToken({ sub: result._id })
-                            this.saveToken(result, token)
-                        }).catch((error) => {
-                            console.log('error :', error)
-                        })
-                        return done(null, profile)
-                        // when there are existing user
-                    } else {
-                        // TODO move to Auth model
-                        let token = AuthModel.issueToken({ sub: result._id })
-                        this.saveToken(result, token)
-                        return done(null, result)
-                    }
-
-
-                }).catch((error) => {
-                    console.log(error)
-                    done(error, profile)
-                })
+            }).catch((error) => {
+                console.log(error)
+                return done(error, profile)
             })
-        )
+        })
+
     }
     /**
      * [getLocalStrategy description]
@@ -171,9 +171,9 @@ class AuthModel {
     }
 
 
-public createAccount(password){
-//can get the currentuser from current user
-}
+    public createAccount(password) {
+        //can get the currentuser from current user
+    }
     /**
      * Send reset password email
      * @param  {[type]} email='' [description]
@@ -261,7 +261,15 @@ public createAccount(password){
     public isExpired(timeStamp: number) {
         return Date.now() > timeStamp
     }
-    public saveToken() { }
+    /**
+     * Save Token to db for a found user
+     * @param result:mongoose model
+     * @param token
+     */
+    public saveToken(result, token: String) {
+        result.token = token
+        return result.save()
+    }
 
     /**
      * Save the current user obecj to UserModel

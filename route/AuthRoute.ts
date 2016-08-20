@@ -15,11 +15,18 @@ import * as LocalStrategy from 'passport-local'
  */
 class AuthRoute {
     constructor() {
-//TODO move facebook strategy to AuthModel
-        this._useFacebook()
-        passport.use(AuthModel.getLocalStrategy())
+        //TODO move facebook strategy to AuthModel
+        this.setUpStrategy()
     }
 
+/**
+ * [setUpStrategy description]
+ * @return {[type]} [description]
+ */
+public setUpStrategy() {
+        passport.use(AuthModel.getFacebookStrategy())
+        passport.use(AuthModel.getLocalStrategy())
+    }
 
     /**
      * Login endpoint
@@ -119,7 +126,7 @@ class AuthRoute {
     }
 
     public createAccount(req, res, next) {
-console.log(req.body)
+        console.log(req.body)
         return new JsonRes(res).success({ message: 'hello' })
     }
 
