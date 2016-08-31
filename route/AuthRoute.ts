@@ -15,7 +15,7 @@ import * as LocalStrategy from 'passport-local'
  */
 class AuthRoute {
     constructor() {
-        //TODO move facebook strategy to AuthModel
+        //TODO:90 move facebook strategy to AuthModel
         this.setUpStrategy()
     }
 
@@ -54,7 +54,7 @@ class AuthRoute {
     public register(req, res, next) {
         // Consider some mapping, variable name may just change
         AuthModel.register(req.body.user_email, req.body.user_password).then((data) => {
-            new JsonRes(res).success({ message: 'successfully create account and sent email' })
+            new JsonRes(res).success({ userEmail:data.userEmail,message: 'successfully create account and sent email' })
         }).catch((e) => {
             new JsonRes(res).fail({ message: e.message })
         })

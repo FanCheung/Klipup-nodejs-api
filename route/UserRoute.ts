@@ -58,10 +58,10 @@ export default class UserRoute {
         let record = req.body
         let currentUser = AuthModel.getCurrentUser()
 
-        //TODO perform a current user check against uid
+        //TODO:140 perform a current user check against uid
         if (currentUser)
             KlipModel.addOne({ uid: currentUser, content: record.content, description: record.description }).then((result) => {
-                // TODO got to check result it might not pass validation
+                // TODO:70 got to check result it might not pass validation
                 console.log('record added', record, result)
                 // let KlipEvent = new Event()
                 event.emit('klipAdded', record)

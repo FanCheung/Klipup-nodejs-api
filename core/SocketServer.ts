@@ -46,7 +46,6 @@ class SocketServer {
      * @return {[type]} [description]
      */
     public initAuthEvents(socket) {
-
         // event.emit('klipAdded', 'aksdfjaksdjfkasf')
         event.on('onKlipRemove', (res) => {
             console.log(res)

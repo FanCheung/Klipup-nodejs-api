@@ -41,7 +41,7 @@ export default class Db {
                 reject('Connection Error')
             })
 
-            //TODO just console log this for now need attach it to the class
+            //TODO:80 just console log this for now need attach it to the class
             db.on('connected', function () {
                 console.log('Mongoose connected to ');
             });

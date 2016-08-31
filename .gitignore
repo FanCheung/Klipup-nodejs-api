@@ -4,3 +4,4 @@ node_modules
 .idea
 typings
 core/ENV.js
+.imdone

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "module": "commonjs",
     "declaration": false,
     "noImplicitAny": false,
@@ -10,12 +10,12 @@
   "exclude": [
   ],
   "files": [
-"test.ts",
     "typings/index.d.ts",
     "app.ts",
     "api.test.ts",
     "core/CONFIG.ts",
     "core/Db.ts",
+    "core/Mail.ts",
     "core/Error.ts",
     "core/JsonRes.ts",
     "core/Singleton.ts",

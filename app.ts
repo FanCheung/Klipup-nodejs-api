@@ -1,11 +1,10 @@
-// TODO Mocha test route
-// TODO Node inspector
-// TODO Reuse Token
-// TODO Construct email  to send for auth print the reset link
-// TODO Check socket io with different identity
-// TODO Weibo login
-// TODO Yeild
-// TODO move to github
+// TODO:30 Node inspector
+// TODO:40 Reuse Token
+// TODO:10 Construct email  to send for auth print the reset link
+// TODO:0 Check socket io with different identity
+// TODO:50 Weibo login
+// TODO:60 Yeild
+// TODO:130 move to github
 
 import * as passport from 'passport'
 import * as path from 'path';
@@ -22,8 +21,9 @@ import * as Promise from 'bluebird'
 
 global.Promise = Promise
 var chalk = require('chalk')
+
 global.log = function(text='',color='white')  {
- console.log(chalk['white'](text))
+ console.log(chalk['yellow'](text))
 }
 /**
  * App

@@ -26,13 +26,12 @@ class AuthModel {
         return jwt.sign(user, CONFIG.AUTH.SECRET_KEY, { expiresIn: expireIn })
     }
 
-
     /**
      * Passport facebook strategy
      * @return {[type]} [description]
      */
     public getFacebookStrategy() {
-        // TODO move to auth model
+        // TODO:120 move to auth model
         return new FacebookStrategy.Strategy(CONFIG.AUTH.FACEBOOK, (accessToken, refreshToken, profile, done) => {
             let json = profile._json
             let socialAccount = ''
@@ -56,7 +55,7 @@ class AuthModel {
                         'thumb': json.picture.data.url,
                         'locale': json.locale
                     }).addOne().then((result) => {
-                        // TODO move to Auth model
+                        // TODO:100 move to Auth model
                         let token = this.issueToken({ sub: result._id })
                         this.saveToken(result, token)
                     }).catch((error) => {
@@ -65,7 +64,7 @@ class AuthModel {
                     return done(null, profile)
                     // when there are existing user
                 } else {
-                    // TODO move to Auth model
+                    // TODO:110 move to Auth model
                     let token = this.issueToken({ sub: result._id })
                     this.saveToken(result, token)
                     return done(null, result)
@@ -124,7 +123,7 @@ class AuthModel {
     public register(email, password) {
         // Load the bcrypt module
         let hashedPassword = this.getPasswordHash(password)
-        //TODO validate password and email here
+        //TODO:160 validate password and email here
         if (!(hashedPassword && email))
             return Promise.reject(new Error('password or email no good'))
         return UserModel.findOne({ email: email }).then((user) => {
@@ -145,7 +144,9 @@ class AuthModel {
             }).addOne()
         }).then((data) => {
             // Send email here
-            return this.sendMail('ACIVATION', data.email, data.email_token)
+            return this.sendMail('ACTIVATION', data.email, data.email_token)
+        }).then((res) => {
+            return res
         })
     }
 
@@ -157,12 +158,36 @@ class AuthModel {
      * @return {Promise}                   [description]
      */
     public sendMail(type = 'ACTIVATION', email = '', token = null): Promise<any> {
-        switch (type) {
+
+// TODO:20 Mocha test route
+var nodemailer = require('nodemailer');
+
+// create reusable transporter object using the default SMTP transport
+var transporter = nodemailer.createTransport('smtps://user%40gmail.com:pass@smtp.gmail.com');
+
+// setup e-mail data with unicode symbols
+var mailOptions = {
+    from: '"Fred Foo 👥" <foo@blurdybloop.com>', // sender address
+    to: 'bar@blurdybloop.com, baz@blurdybloop.com', // list of receivers
+    subject: 'Hello ✔', // Subject line
+    text: 'Hello world 🐴', // plaintext body
+    html: '<b>Hello world 🐴</b>' // html body
+};
+
+// send mail with defined transport object
+transporter.sendMail(mailOptions, function(error, info){
+    if(error){
+        return console.log(error);
+    }
+    console.log('Message sent: ' + info.response);
+});
+
+switch (type) {
             case 'ACTIVATION': {
                 if (!(email && token))
                     //some mail funcition here
                     return Promise.reject(new Error('send mail error'))
-                return Promise.resolve('ok')
+                return Promise.resolve({ userEmail: email })
             }
             case 'REST_PASSWORD': {
                 return Promise.resolve('ok')
@@ -178,8 +203,8 @@ class AuthModel {
      */
     public createAccount(password, token) {
 
-        // TODO see whether we should enforce user to have password
-        //TODO validate password weakness length etc
+        // TODO:150 see whether we should enforce user to have password
+        //TODO:180 validate password weakness length etc
         if (!password) return Promise.reject(new Error('Password invalid'))
         if (!token) return Promise.reject(new Error('Missing Token'))
 
@@ -189,7 +214,7 @@ class AuthModel {
 
             if (!result)
                 return Promise.reject(new Error('User not found'))
-//password alrewady exist should reject
+            //password alrewady exist should reject
             if (result.password)
                 return Promise.reject(new Error('Password already exist'))
 
@@ -240,7 +265,7 @@ class AuthModel {
      */
     public resetPassword(email: string = null, emailToken = null, password: string = null) {
 
-        // TODO validate password lenght and strength
+        // TODO:170 validate password lenght and strength
         if (!validator.isEmail(email))
             return Promise.reject(new Error('Not valid email'))
         if (!password)
