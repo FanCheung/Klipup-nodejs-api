@@ -1,18 +1,32 @@
 import * as nodemailer from 'nodemailer'
-
+import * as CONFIG from './CONFIG';
 class Mail {
-    transporter = nodemailer.createTransport('smtps://user%40gmail.com:pass@smtp.gmail.com')
+    transporter
     constructor(private options = {
-        from: null,
-        to: null,
-        subject: null,
-        text: '',
-        html: ''
-    }) {
+        from: '"Fred Foo 👥" <fancheung@outlook.com>', // sender address
+        to: 'dan@varomatic.com',
+        subject: 'testing',
+        text: 'testing',
+        html: 'testing'
+    }
+
+    ) {
+
+        this.transporter = nodemailer.createTransport(CONFIG.SMTP)
+        this.transporter.verify(function(error, success) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Server is ready to take our messages');
+            }
+        })
+
         // create reusable transporter object using the default SMTP transport
+
     }
 
     public send() {
+
         this.transporter.sendMail(this.options, function(error, info) {
             if (error) {
                 return console.log(error);
@@ -22,14 +36,4 @@ class Mail {
     }
 
 }
-
-// // setup e-mail data with unicode symbols
-// var mailOptions = {
-//     from: '"Fred Foo 👥" <foo@blurdybloop.com>', // sender address
-//     to: 'bar@blurdybloop.com, baz@blurdybloop.com', // list of receivers
-//     subject: 'Hello ✔', // Subject line
-//     text: 'Hello world 🐴', // plaintext body
-//     html: '<b>Hello world 🐴</b>' // html body
-// };
-
-// send mail with defined transport object
+export { Mail }
