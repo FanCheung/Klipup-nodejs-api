@@ -35,9 +35,10 @@ module CONFIG {
         }
     }
 
-
     export let ENV = {
-        URL: 'http://klipup.com:5000'
+        URL: 'http://klipup.com:5000',
+        APP_URL: 'http://localhost:8080'
+
     }
 }
 export =CONFIG

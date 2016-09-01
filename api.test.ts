@@ -33,14 +33,17 @@ describe('Db tests', function() {
     })
 })
 
-describe('Auth api', function() {
-    var db = null
+describe('Registration', function() {
+    let db = null
+    let users = {}
+    let user = {}
+    let testData = { email: 'test@test.com', password: '000000' }
     before(function(done) {
 
         MongoClient.connect(dbUrl, function(err, result) {
             //make db availabel for use avoid multiple connection call back
             db = result
-            let users = db.collection('users');
+            users = db.collection('users');
 
             // remove all users
             users.deleteMany({})
@@ -66,47 +69,56 @@ describe('Auth api', function() {
         })
     })
 
-    it('Should have a Authorisation header', function(done) {
+    it.only('User should be found in db now', function(done) {
+        users.findOne({ email: 'test@test.com' }, (err, result) => {
+            user = result
+            done()
+        })
+    })
 
+
+    it.only('The token and email should be available for activation', function(done) {
+        let activationLink = CONFIG.ENV.URL + '/auth/activate/?email=' + user.email + '&token=' + user.email_token
+        api.get(activationLink).expect(200, done)
     })
 
     it('Should accept a valid password', function(done) {
 
     })
-})
-
-describe('Generator test', function() {
-    var x = 1
-
-    function* gen(x) {
-        x++
-        yield x++
-        return x + 11
-    }
-
-    it('generator', function() {
-        var res
-        var y = gen(5)
-        res = y.next()
-        console.log(res.value)
-        console.log(y.next().value)
-    })
-
-    it('Promise and', function() {
 
 
-        let p1 = new Promise(function(resolve, reject) {
-            return resolve(gen.next(10))
+    describe('Generator test', function() {
+        var x = 1
+
+        function* gen(x) {
+            x++
+            yield x++
+            return x + 11
+        }
+
+        it('generator', function() {
+            var res
+            var y = gen(5)
+            res = y.next()
+            console.log(res.value)
+            console.log(y.next().value)
         })
 
-        function* main(p1) {
-            let x = 1
-            x = x * (yield p1)
-            return x
-        }
-        let gen = main(p1)
-        gen.next()
-        console.log(gen.next().value)
-    })
+        it('Promise and', function() {
 
-})
+
+            let p1 = new Promise(function(resolve, reject) {
+                return resolve(gen.next(10))
+            })
+
+            function* main(p1) {
+                let x = 1
+                x = x * (yield p1)
+                return x
+            }
+            let gen = main(p1)
+            gen.next()
+            console.log(gen.next().value)
+        })
+
+    })

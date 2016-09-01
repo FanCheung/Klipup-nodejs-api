@@ -12,7 +12,6 @@ class Mail {
     constructor(options) {
         // apply shallow merging
         this.options = Object.assign(this.options, options)
-        console.log(this.options)
         this.transporter = nodemailer.createTransport(CONFIG.SMTP)
         this.transporter.verify(function(error, success) {
             if (error) {
