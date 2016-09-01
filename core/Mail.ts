@@ -10,8 +10,9 @@ class Mail {
         html: 'testing'
     }
     constructor(options) {
-
+        // apply shallow merging
         this.options = Object.assign(this.options, options)
+        console.log(this.options)
         this.transporter = nodemailer.createTransport(CONFIG.SMTP)
         this.transporter.verify(function(error, success) {
             if (error) {
@@ -20,14 +21,12 @@ class Mail {
                 console.log('Server is ready to take our messages');
             }
         })
-
         // create reusable transporter object using the default SMTP transport
 
     }
 
     public send() {
 
-console.log(this.options)
         // this.transporter.sendMail(this.options, function(error, info) {
         //     if (error) {
         //         return console.log(error);

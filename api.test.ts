@@ -57,7 +57,10 @@ describe('Auth api', function() {
     })
 
     it.only('Should register a new user and create a user record in db', function(done) {
-        api.post('/api/register').send({ user_email: 'test@test.com', user_password: 'hello' }).expect(200, function(error) {
+
+        api.post('/api/register').send({ user_email: 'test@test.com', user_password: 'hello' }).expect(200, function(error, result) {
+            // should return user object
+            assert.equal(result.body.data.userEmail, 'test@test.com')
             if (!error)
                 done()
         })

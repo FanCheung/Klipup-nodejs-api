@@ -160,18 +160,19 @@ class AuthModel {
      */
     public sendMail(type = 'ACTIVATION', email = null, token = null): Promise<any> {
         // TODO:20 Mocha test route
-
         switch (type) {
             case 'ACTIVATION': {
-                if (!(email && token)) {
-                    //some mail funcition here
-                    let mail = new Mail({
-email: email,
-subject:'Email activation',
-html:''})
-mail.send()
+                if (!(email && token))
                     return Promise.reject(new Error('send mail error'))
-                }
+                //some mail funcition here
+                let mail = new Mail({
+                    email: email,
+                    subject: 'Email activation',
+                    html: 'Dear' + email + ',Please visit ' + CONFIG.ENV.URL + '/auth/activate/?email=' + email + '&token=' + token
+                })
+
+                mail.send()
+
                 return Promise.resolve({ userEmail: email })
             }
             case 'REST_PASSWORD': {
@@ -186,11 +187,46 @@ mail.send()
     }
 
     /**
+     * Account activation operation
+     */
+    public activate(email, token) {
+
+        UserModel.findOne({ email: email, emailToken: token }).then((result) => {
+            // no result found
+            if (!result)
+                return Promise.reject(new Error('User not found or token incorrect'))
+            // token expires prepare
+            if (!this.isExpired(result.email_expires))
+                return Promise.reject(new Error('Activation token expires'))
+            result.email_expires = 0
+            result.email_token = null
+            return result.save()
+        }).then((user) => {
+            return user
+        })
+    }
+
+    public reActivate(email) {
+
+        UserModel.findOne({ email: email }).then((result) => {
+            // no result found
+            if (!result)
+                return Promise.reject(new Error('User not found'))
+            // generate token here
+            // token
+
+            return result.save()
+        }).then((user) => {
+            return user
+        })
+    }
+
+    /**
      * [createAccount description]
      * @param  {[type]} password [description]
      * @param  {[type]} token    [description]
      * @return {[type]}          [description]
-     */
+       */
     public createAccount(password, token) {
 
         // TODO:150 see whether we should enforce user to have password
