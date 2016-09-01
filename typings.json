@@ -9,6 +9,7 @@
     "express": "registry:dt/express#4.0.0+20160317120654",
     "express-serve-static-core": "registry:dt/express-serve-static-core#0.0.0+20160701212727",
     "jsonwebtoken": "registry:dt/jsonwebtoken#0.0.0+20160627133958",
+    "lodash": "registry:dt/lodash#4.14.0+20160830145422",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
     "mocha": "registry:dt/mocha#2.2.5+20160720003353",
     "mongoose": "registry:dt/mongoose#3.8.5+20160629014609",

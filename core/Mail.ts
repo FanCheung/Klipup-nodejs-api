@@ -1,17 +1,17 @@
 import * as nodemailer from 'nodemailer'
 import * as CONFIG from './CONFIG';
 class Mail {
-    transporter
-    constructor(private options = {
-        from: '"Fred Foo 👥" <fancheung@outlook.com>', // sender address
+    private transporter
+    private options = {
+        from: '"Support 👥" <fancheung@outlook.com>', // sender address
         to: 'dan@varomatic.com',
         subject: 'testing',
         text: 'testing',
         html: 'testing'
     }
+    constructor(options) {
 
-    ) {
-
+        this.options = Object.assign(this.options, options)
         this.transporter = nodemailer.createTransport(CONFIG.SMTP)
         this.transporter.verify(function(error, success) {
             if (error) {
@@ -27,12 +27,13 @@ class Mail {
 
     public send() {
 
-        this.transporter.sendMail(this.options, function(error, info) {
-            if (error) {
-                return console.log(error);
-            }
-            console.log('Message sent: ' + info.response);
-        })
+console.log(this.options)
+        // this.transporter.sendMail(this.options, function(error, info) {
+        //     if (error) {
+        //         return console.log(error);
+        //     }
+        //     console.log('Message sent: ' + info.response);
+        // })
     }
 
 }

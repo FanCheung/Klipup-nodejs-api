@@ -5,7 +5,7 @@ import * as LocalStrategy from 'passport-local'
 import * as FacebookStrategy from 'passport-facebook'
 import * as passport from 'passport'
 import * as validator from 'validator'
-
+import { Mail } from '../core/Mail'
 /**
  * Handle all authentication related activities
  */
@@ -77,6 +77,7 @@ class AuthModel {
         })
 
     }
+
     /**
      * [getLocalStrategy description]
      * @return {Promise} [description]
@@ -157,40 +158,29 @@ class AuthModel {
      * @param  {[type]} token=null        [description]
      * @return {Promise}                   [description]
      */
-    public sendMail(type = 'ACTIVATION', email = '', token = null): Promise<any> {
+    public sendMail(type = 'ACTIVATION', email = null, token = null): Promise<any> {
+        // TODO:20 Mocha test route
 
-// TODO:20 Mocha test route
-var nodemailer = require('nodemailer');
-
-// create reusable transporter object using the default SMTP transport
-var transporter = nodemailer.createTransport('smtps://user%40gmail.com:pass@smtp.gmail.com');
-
-// setup e-mail data with unicode symbols
-var mailOptions = {
-    from: '"Fred Foo 👥" <foo@blurdybloop.com>', // sender address
-    to: 'bar@blurdybloop.com, baz@blurdybloop.com', // list of receivers
-    subject: 'Hello ✔', // Subject line
-    text: 'Hello world 🐴', // plaintext body
-    html: '<b>Hello world 🐴</b>' // html body
-};
-
-// send mail with defined transport object
-transporter.sendMail(mailOptions, function(error, info){
-    if(error){
-        return console.log(error);
-    }
-    console.log('Message sent: ' + info.response);
-});
-
-switch (type) {
+        switch (type) {
             case 'ACTIVATION': {
-                if (!(email && token))
+                if (!(email && token)) {
                     //some mail funcition here
+                    let mail = new Mail({
+email: email,
+subject:'Email activation',
+html:''})
+mail.send()
                     return Promise.reject(new Error('send mail error'))
+                }
                 return Promise.resolve({ userEmail: email })
             }
             case 'REST_PASSWORD': {
-                return Promise.resolve('ok')
+
+                if (!(email && token))
+
+                    //some mail funcition here
+                    return Promise.reject(new Error('send mail error'))
+                return Promise.resolve({ userEmail: email })
             }
         }
     }

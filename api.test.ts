@@ -40,6 +40,10 @@ describe('Auth api', function() {
         MongoClient.connect(dbUrl, function(err, result) {
             //make db availabel for use avoid multiple connection call back
             db = result
+            let users = db.collection('users');
+
+            // remove all users
+            users.deleteMany({})
             return done()
         })
     })
@@ -52,9 +56,10 @@ describe('Auth api', function() {
         api.post('/api/login').send({ username: '', password: '' }).expect(401, done)
     })
 
-    it('Should register a new user and create a user record in db', function(done) {
-        api.post('/api/register').send({ user_email: 'test@test.com', user_password: 'hello' }).expect(200, function() {
-
+    it.only('Should register a new user and create a user record in db', function(done) {
+        api.post('/api/register').send({ user_email: 'test@test.com', user_password: 'hello' }).expect(200, function(error) {
+            if (!error)
+                done()
         })
     })
 
@@ -67,7 +72,7 @@ describe('Auth api', function() {
     })
 })
 
-describe.only('Generator test', function() {
+describe('Generator test', function() {
     var x = 1
 
     function* gen(x) {
@@ -84,7 +89,7 @@ describe.only('Generator test', function() {
         console.log(y.next().value)
     })
 
-    it('Promise and'  , function() {
+    it('Promise and', function() {
 
 
         let p1 = new Promise(function(resolve, reject) {

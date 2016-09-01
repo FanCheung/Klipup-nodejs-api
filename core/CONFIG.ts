@@ -1,3 +1,4 @@
+
 require('./ENV.js')
 module CONFIG {
     export let AUTH = {

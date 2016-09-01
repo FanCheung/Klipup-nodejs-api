@@ -19,6 +19,8 @@ import Registry = require('./Registry')
 import SocketServer from './core/SocketServer'
 import * as Promise from 'bluebird'
 import {Mail} from './core/Mail'
+import * as _ from 'lodash'
+
 global.Promise = Promise
 var chalk = require('chalk')
 
