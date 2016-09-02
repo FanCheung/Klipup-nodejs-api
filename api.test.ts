@@ -77,7 +77,13 @@ describe('Registration', function() {
         })
     })
 
-    it('Should reject the an expired token', function(done) {
+    it.only('Should reject the an expired token', function(done) {
+        let activationLink = '/api/activate/?email=' + user.email + '&token=' + '888'
+        api.get(activationLink).expect(500, function(error, res) {
+            assert(res.body.error)
+            assert(res.error instanceof Error)
+            done()
+        })
 
 
     })

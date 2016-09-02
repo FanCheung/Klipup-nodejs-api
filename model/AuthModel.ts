@@ -190,7 +190,7 @@ class AuthModel {
      * Account activation operation
      */
     public activate(email, token) {
-console.log(email,token)
+
         return UserModel.findOne({ email: email, email_token: token }).then((result) => {
             // no result found
             if (!result)
@@ -206,6 +206,11 @@ console.log(email,token)
         })
     }
 
+    /**
+     * [reActivate description]
+     * @param  {[type]} email [description]
+     * @return {[type]}       [description]
+     */
     public reActivate(email) {
 
         UserModel.findOne({ email: email }).then((result) => {
