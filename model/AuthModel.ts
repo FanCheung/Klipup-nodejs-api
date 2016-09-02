@@ -190,13 +190,13 @@ class AuthModel {
      * Account activation operation
      */
     public activate(email, token) {
-
-        UserModel.findOne({ email: email, emailToken: token }).then((result) => {
+console.log(email,token)
+        return UserModel.findOne({ email: email, email_token: token }).then((result) => {
             // no result found
             if (!result)
                 return Promise.reject(new Error('User not found or token incorrect'))
             // token expires prepare
-            if (!this.isExpired(result.email_expires))
+            if (this.isExpired(result.email_expires))
                 return Promise.reject(new Error('Activation token expires'))
             result.email_expires = 0
             result.email_token = null

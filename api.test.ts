@@ -1,4 +1,5 @@
 import * as  chai from 'chai'
+import * as CONFIG from './core/CONFIG'
 let supertest = require('supertest')
 let api = supertest('http://localhost:5000');
 // let chai = require('chai')
@@ -76,49 +77,24 @@ describe('Registration', function() {
         })
     })
 
+    it('Should reject the an expired token', function(done) {
+
+
+    })
+
+    it('Should reject a invalid token', function(done) {
+    })
 
     it.only('The token and email should be available for activation', function(done) {
-        let activationLink = CONFIG.ENV.URL + '/auth/activate/?email=' + user.email + '&token=' + user.email_token
-        api.get(activationLink).expect(200, done)
+        let activationLink = '/api/activate/?email=' + user.email + '&token=' + user.email_token
+        console.log(activationLink)
+        api.get(activationLink).expect(200, function() {
+            done()
+        })
     })
+
 
     it('Should accept a valid password', function(done) {
 
     })
-
-
-    describe('Generator test', function() {
-        var x = 1
-
-        function* gen(x) {
-            x++
-            yield x++
-            return x + 11
-        }
-
-        it('generator', function() {
-            var res
-            var y = gen(5)
-            res = y.next()
-            console.log(res.value)
-            console.log(y.next().value)
-        })
-
-        it('Promise and', function() {
-
-
-            let p1 = new Promise(function(resolve, reject) {
-                return resolve(gen.next(10))
-            })
-
-            function* main(p1) {
-                let x = 1
-                x = x * (yield p1)
-                return x
-            }
-            let gen = main(p1)
-            gen.next()
-            console.log(gen.next().value)
-        })
-
-    })
+})

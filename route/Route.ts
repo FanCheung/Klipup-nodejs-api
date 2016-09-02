@@ -25,8 +25,9 @@ module Route {
         router.post('/api/forgot-password',AuthRoute.forgotPassword)
         router.post('/api/create-account',AuthRoute.createAccount)
         router.get('/api/auth/facebook', passport.authenticate('facebook', { scope: ['email'] }))
-
         // router.post('/auth/get-token/', AuthRoute.issueToken)
+
+        router.get('/api/activate', AuthRoute.activate)
         router.get('/api/auth/get-user/', function(res, req, next) {
             next()
         })

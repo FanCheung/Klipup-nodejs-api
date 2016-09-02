@@ -54,7 +54,7 @@ class AuthRoute {
     public register(req, res, next) {
         // Consider some mapping, variable name may just change
         AuthModel.register(req.body.user_email, req.body.user_password).then((data) => {
-            new JsonRes(res).success({ userEmail:data.userEmail,message: 'successfully create account and sent email' })
+            new JsonRes(res).success({ userEmail: data.userEmail, message: 'successfully create account and sent email' })
         }).catch((e) => {
             new JsonRes(res).fail({ message: e.message })
         })
@@ -117,13 +117,13 @@ class AuthRoute {
             })
     }
 
-/**
- * Create Account after social login ask to input password
- * @param  {[type]}   req  [description]
- * @param  {[type]}   res  [description]
- * @param  {Function} next [description]
- * @return {[type]}        [description]
- */
+    /**
+     * Create Account after social login ask to input password
+     * @param  {[type]}   req  [description]
+     * @param  {[type]}   res  [description]
+     * @param  {Function} next [description]
+     * @return {[type]}        [description]
+     */
     public createAccount(req, res, next) {
         AuthModel.extractToken(req).then((token) => {
             return token
@@ -149,6 +149,15 @@ class AuthRoute {
             next(new Error('not powerful enough'))
     }
 
+    public activate(req, res, next) {
+        let {email, token} = req.query
+        AuthModel.activate(email, token).then((user) => {
+            console.log(user)
+            return new JsonRes(res).success(user)
+        }).catch((e) => {
+            return new JsonRes(res).fail({ message: e.message })
+        })
+    }
     /**
      * [logOut description]
      * @param  {[type]}   req  [description]
