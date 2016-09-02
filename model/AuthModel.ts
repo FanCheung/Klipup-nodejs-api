@@ -159,7 +159,6 @@ class AuthModel {
      * @return {Promise}                   [description]
      */
     public sendMail(type = 'ACTIVATION', email = null, token = null): Promise<any> {
-        // TODO:20 Mocha test route
         switch (type) {
             case 'ACTIVATION': {
                 if (!(email && token))

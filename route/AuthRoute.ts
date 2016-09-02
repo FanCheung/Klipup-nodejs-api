@@ -10,21 +10,19 @@ import AuthModel from '../model/AuthModel'
 import * as Promise from 'bluebird'
 import JsonRes from '../core/JsonRes'
 import * as LocalStrategy from 'passport-local'
-/**
- *
- */
+
 class AuthRoute {
     constructor() {
         //TODO:90 move facebook strategy to AuthModel
         this.setUpStrategy()
     }
-
     /**
      * [setUpStrategy description]
      * @return {[type]} [description]
      */
     public setUpStrategy() {
         passport.use(AuthModel.getFacebookStrategy())
+        //TODO: passport localStrategy is kinda no use, enforce the user of username and password on req
         passport.use(AuthModel.getLocalStrategy())
     }
 
@@ -39,7 +37,6 @@ class AuthRoute {
         passport.authenticate('local', { session: false }, function(err, user, info) {
             if (!user)
                 return new JsonRes(res).fail({ message: 'username or password no match' }, 401)
-
             return new JsonRes(res).success({ uid: user._id, token: user.token })
         })(req, res, next);
     }
@@ -59,7 +56,6 @@ class AuthRoute {
             new JsonRes(res).fail({ message: e.message })
         })
     }
-
 
 
     //middleware
@@ -152,6 +148,7 @@ class AuthRoute {
     public activate(req, res, next) {
         let {email, token} = req.query
         AuthModel.activate(email, token).then((user) => {
+            //TODO: Consider auto login
             console.log(user)
             return new JsonRes(res).success(user)
         }).catch((e) => {

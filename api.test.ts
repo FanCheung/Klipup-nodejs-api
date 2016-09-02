@@ -77,7 +77,7 @@ describe('Registration', function() {
         })
     })
 
-    it.only('Should reject the an expired token', function(done) {
+    it.only('Should reject the invalid token', function(done) {
         let activationLink = '/api/activate/?email=' + user.email + '&token=' + '888'
         api.get(activationLink).expect(500, function(error, res) {
             assert(res.body.error)
@@ -85,11 +85,8 @@ describe('Registration', function() {
             done()
         })
 
-
     })
 
-    it('Should reject a invalid token', function(done) {
-    })
 
     it.only('The token and email should be available for activation', function(done) {
         let activationLink = '/api/activate/?email=' + user.email + '&token=' + user.email_token
