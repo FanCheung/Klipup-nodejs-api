@@ -33,12 +33,18 @@ class AuthRoute {
      * @return {Promise}        [description]
      */
     public login(req, res, next) {
+
         //response coming from passport strategy
         passport.authenticate('local', { session: false }, function(err, user, info) {
             //TODO check if activation code is still there
-console.log(user)
             if (!user)
-                return new JsonRes(res).fail({ message: 'username or password no match' }, 401)
+                return new JsonRes(res).fail({ message: 'Username or password no match' }, 401)
+
+            //TODO consider adding a status field to be more precise
+            // if account is not activated
+            if (user.email_token || user.email_expires != 0)
+                return new JsonRes(res).fail({ message: 'Account not activated' }, 401)
+
             return new JsonRes(res).success({ uid: user._id, token: user.token })
         })(req, res, next);
     }
