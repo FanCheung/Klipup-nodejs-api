@@ -35,6 +35,8 @@ class AuthRoute {
     public login(req, res, next) {
         //response coming from passport strategy
         passport.authenticate('local', { session: false }, function(err, user, info) {
+            //TODO check if activation code is still there
+console.log(user)
             if (!user)
                 return new JsonRes(res).fail({ message: 'username or password no match' }, 401)
             return new JsonRes(res).success({ uid: user._id, token: user.token })
@@ -102,8 +104,6 @@ class AuthRoute {
     public resetPassword(req, res, next) {
 
         let {newPassword, email, email_token} = req.body
-        console.log(req.body)
-
         //process with authmodel method
         AuthModel.resetPassword(email, email_token, newPassword)
             .then((result) => {
@@ -155,6 +155,7 @@ class AuthRoute {
             return new JsonRes(res).fail({ message: e.message })
         })
     }
+
     /**
      * [logOut description]
      * @param  {[type]}   req  [description]

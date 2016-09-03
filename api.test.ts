@@ -19,6 +19,10 @@ function connectDb(dbUrl = 'mongodb://localhost:27017/klipup') {
     })
 }
 
+const USER_DATA={
+email:'user@user.com',
+password:'9999999'
+}
 
 describe('Db tests', function() {
     before(function(done) {
@@ -34,11 +38,11 @@ describe('Db tests', function() {
     })
 })
 
+
 describe('Registration', function() {
     let db = null
     let users = {}
     let user = {}
-    let testData = { email: 'test@test.com', password: '000000' }
     before(function(done) {
 
         MongoClient.connect(dbUrl, function(err, result) {
@@ -52,26 +56,20 @@ describe('Registration', function() {
         })
     })
 
-    it('Facebook login', function(done) {
 
-    })
 
-    it('Should return unauthorize status with invalid login', function(done) {
-        api.post('/api/login').send({ username: '', password: '' }).expect(401, done)
-    })
 
     it.only('Should register a new user and create a user record in db', function(done) {
-
-        api.post('/api/register').send({ user_email: 'test@test.com', user_password: 'hello' }).expect(200, function(error, result) {
+        api.post('/api/register').send({ user_email: USER_DATA.email, user_password: USER_DATA.password }).expect(200, function(error, result) {
             // should return user object
-            assert.equal(result.body.data.userEmail, 'test@test.com')
+            assert.equal(result.body.data.userEmail, USER_DATA.email)
             if (!error)
                 done()
         })
     })
 
     it.only('User should be found in db now', function(done) {
-        users.findOne({ email: 'test@test.com' }, (err, result) => {
+        users.findOne({ email: USER_DATA.email }, (err, result) => {
             user = result
             done()
         })
@@ -90,14 +88,35 @@ describe('Registration', function() {
 
     it.only('The token and email should be available for activation', function(done) {
         let activationLink = '/api/activate/?email=' + user.email + '&token=' + user.email_token
-        console.log(activationLink)
         api.get(activationLink).expect(200, function() {
             done()
         })
     })
 
 
-    it('Should accept a valid password', function(done) {
+    it('Should close db connection', function(done) {
+        db.close()
+        done()
+    })
+})
+
+describe('Login', function() {
+
+  it.only('Should return unauthorize status with invalid login', function(done) {
+        api.post('/api/login').send({ username: '', password: '' }).expect(401, done)
+    })
+
+    it.only('should login with registered user data', function(done) {
+        api.post('/api/login').send({ username: USER_DATA.email, password: USER_DATA.password }).expect(200, done)
+    })
+})
+
+describe('Forgot  and reset password', function() {
+
+    it('Should send an email', function() {
 
     })
+
+    it('The reset link with supplied password should change user password')
+
 })
