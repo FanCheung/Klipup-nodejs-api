@@ -1,3 +1,5 @@
+
+//TODO Authorisation header
 import * as  chai from 'chai'
 import * as CONFIG from './core/CONFIG'
 let supertest = require('supertest')
@@ -8,69 +10,57 @@ let assert = chai.assert
 let expect = chai.expect
 var MongoClient = require('mongodb').MongoClient
 var siteUrl = 'http://localhost:8080'
-var dbUrl = 'mongodb://localhost:27017/klipup'
+const DB_URL = 'mongodb://localhost:27017/klipup'
 
 let db = null
 let _users = {}
 let _user = {}
-let _login = function() {
 
-    before(function(done) {
-        MongoClient.connect(dbUrl, function(err, result) {
-            //make db availabel for use avoid multiple connection call back
-            db = result
-            _users = db.collection('users');
-            // remove all users
-            _users.deleteMany({})
-            return done()
-        })
-    })
+const USER_DATA = {
+    email: 'user@user.com',
+    password: '999'
+}
 
-    it('Should register a new user and create a user record in db',
-        function(done) {
-            api.post('/api/register').send({ user_email: USER_DATA.email, user_password: USER_DATA.password }).expect(200, function(error, result) {
-                // should return user object
-                assert.equal(result.body.data.userEmail, USER_DATA.email)
-                if (!error)
-                    done()
+let _login = function(done) {
+
+    MongoClient.connect(DB_URL, function(err, result) {
+        db = result;
+        _users = db.collection('users')
+        _users.deleteMany({})
+    });
+
+    api.post('/api/register').send({ user_email: USER_DATA.email, user_password: USER_DATA.password }).expect(200, function(error, result) {
+        assert.equal(result.body.data.userEmail, USER_DATA.email)
+
+        _users.findOne({ email: USER_DATA.email }, (err, result) => {
+            _user = result;
+
+            let activationLink = '/api/activate/?email=' + _user.email + '&token=' + _user.email_token;
+            api.get(activationLink).expect(200, function(error, res) {
+                assert.equal(res.body.data.email_token, null, 'why the toekn still in db!!');
+                assert.equal(res.body.data.email_expires, 0, 'Should expire expire');
+
+                api.post('/api/login').send({ username: USER_DATA.email, password: USER_DATA.password }).expect(200, function(err, result) {
+                    assert(result.body.data.token, 'jwt token not available');
+                    assert(result.body.data.uid, 'uid not available');
+                    done();
+                });
             })
-        })
-
-    // how to make this dynamic guess we have to segmentie the tests
-    it('The token and email should be good for activation', function(done) {
-        let activationLink = '/api/activate/?email=' + _user.email + '&token=' + _user.email_token
-        api.get(activationLink).expect(200, function(error, res) {
-            assert.equal(res.body.data.email_token, null, 'why the toekn still in db!!')
-            assert.equal(res.body.data.email_expires, 0, 'Should expire expire')
-            done()
-        })
+        });
     })
-
-    it('should login with registered user data', function(done) {
-        api.post('/api/login').send({ username: USER_DATA.email, password: USER_DATA.password }).expect(200, function(err, result) {
-            assert(result.body.token, 'jwt token not available')
-            assert(result.body.uid, 'uid not available')
-            done()
-        })
-    })
-
-
 
 }
 
-function connectDb(dbUrl = 'mongodb://localhost:27017/klipup') {
+function connectDb(DB_URL = 'mongodb://localhost:27017/klipup') {
     return new Promise(function(resolve, reject) {
-        MongoClient.connect(dbUrl, function(err, db) {
+        MongoClient.connect(DB_URL, function(err, db) {
             return resolve(db)
             // db.close()
         })
     })
 }
 
-const USER_DATA = {
-    email: 'user@user.com',
-    password: '999'
-}
+
 
 describe('Db tests', function() {
     before(function(done) {
@@ -91,7 +81,7 @@ describe('Registration', function() {
     let _users = {}
     let _user = {}
     before(function(done) {
-        MongoClient.connect(dbUrl, function(err, result) {
+        MongoClient.connect(DB_URL, function(err, result) {
             //make db availabel for use avoid multiple connection call back
             db = result
             _users = db.collection('users');
@@ -156,13 +146,25 @@ describe('Login', function() {
 })
 
 describe('Forgot  and reset password', function() {
-    _login()
     it('Should send an email', function() {
 
     })
 
     it('The reset link with supplied password should change user password', function() {
 
+    })
+})
+
+/**
+* [describe description]
+*/
+describe.only('Klips CRUD', function() {
+    before('Authenticate', _login)
+    describe('Create', function() {
+        it('Create a new record with valid jwt', function(done) {
+        })
+
+        it('Create a new record with invalide jwt', function(done))
     })
 })
 
