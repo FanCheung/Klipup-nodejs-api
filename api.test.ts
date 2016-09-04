@@ -10,6 +10,53 @@ var MongoClient = require('mongodb').MongoClient
 var siteUrl = 'http://localhost:8080'
 var dbUrl = 'mongodb://localhost:27017/klipup'
 
+let db = null
+let _users = {}
+let _user = {}
+let _login = function() {
+
+    before(function(done) {
+        MongoClient.connect(dbUrl, function(err, result) {
+            //make db availabel for use avoid multiple connection call back
+            db = result
+            _users = db.collection('users');
+            // remove all users
+            _users.deleteMany({})
+            return done()
+        })
+    })
+
+    it('Should register a new user and create a user record in db',
+        function(done) {
+            api.post('/api/register').send({ user_email: USER_DATA.email, user_password: USER_DATA.password }).expect(200, function(error, result) {
+                // should return user object
+                assert.equal(result.body.data.userEmail, USER_DATA.email)
+                if (!error)
+                    done()
+            })
+        })
+
+    // how to make this dynamic guess we have to segmentie the tests
+    it('The token and email should be good for activation', function(done) {
+        let activationLink = '/api/activate/?email=' + _user.email + '&token=' + _user.email_token
+        api.get(activationLink).expect(200, function(error, res) {
+            assert.equal(res.body.data.email_token, null, 'why the toekn still in db!!')
+            assert.equal(res.body.data.email_expires, 0, 'Should expire expire')
+            done()
+        })
+    })
+
+    it('should login with registered user data', function(done) {
+        api.post('/api/login').send({ username: USER_DATA.email, password: USER_DATA.password }).expect(200, function(err, result) {
+            assert(result.body.token, 'jwt token not available')
+            assert(result.body.uid, 'uid not available')
+            done()
+        })
+    })
+
+
+
+}
 
 function connectDb(dbUrl = 'mongodb://localhost:27017/klipup') {
     return new Promise(function(resolve, reject) {
@@ -53,8 +100,8 @@ describe('Registration', function() {
             return done()
         })
     })
-    it.only('Should register a new user and create a user record in db',
 
+    it('Should register a new user and create a user record in db',
         function(done) {
             api.post('/api/register').send({ user_email: USER_DATA.email, user_password: USER_DATA.password }).expect(200, function(error, result) {
                 // should return user object
@@ -64,14 +111,14 @@ describe('Registration', function() {
             })
         })
 
-    it.only('User should be found in db now', function(done) {
+    it('User should be found in db now', function(done) {
         _users.findOne({ email: USER_DATA.email }, (err, result) => {
             _user = result
             done()
         })
     })
 
-    it.only('Should reject the invalid token', function(done) {
+    it('Should reject the invalid token', function(done) {
         let activationLink = '/api/activate/?email=' + _user.email + '&token=' + '888'
         api.get(activationLink).expect(500, function(error, res) {
             assert(res.body.error)
@@ -82,27 +129,26 @@ describe('Registration', function() {
     })
 
     // how to make this dynamic guess we have to segmentie the tests
-    it.only('The token and email should be good for activation', function(done) {
+    it('The token and email should be good for activation', function(done) {
         let activationLink = '/api/activate/?email=' + _user.email + '&token=' + _user.email_token
         api.get(activationLink).expect(200, function(error, res) {
             assert.equal(res.body.data.email_token, null, 'why the toekn still in db!!')
             assert.equal(res.body.data.email_expires, 0, 'Should expire expire')
             done()
-
         })
     })
 })
 
 describe('Login', function() {
 
-    it.only('Should return unauthorize status with invalid login', function(done) {
+    it('Should return unauthorize status with invalid login', function(done) {
         api.post('/api/login').send({ username: 'invalid', password: 'invalid' }).expect(401, done)
     })
 
-    it.only('should login with registered user data', function(done) {
+    it('should login with registered user data', function(done) {
         api.post('/api/login').send({ username: USER_DATA.email, password: USER_DATA.password }).expect(200, function(err, result) {
-            assert(result.body.token, 'jwt token not available')
-            assert(result.body.uid, 'uid not available')
+            assert(result.body.data.token, 'jwt token not available')
+            assert(result.body.data.uid, 'uid not available')
             done()
         })
     })
@@ -110,7 +156,7 @@ describe('Login', function() {
 })
 
 describe('Forgot  and reset password', function() {
-
+    _login()
     it('Should send an email', function() {
 
     })
