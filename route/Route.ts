@@ -17,7 +17,7 @@ module Route {
         router.put('/api/user/update/:uid', UserRoute.updateUser)
         router.post('/api/user/add', UserRoute.addUser)
         router.post('/api/user/:uid/klip/add', AuthRoute.authenticateToken, AuthRoute.authenticateAcl, UserRoute.addKlip)
-        router.get('/api/user/:uid/klips/', AuthRoute.authenticateToken, AuthRoute.authenticateAcl, UserRoute.getKlips)
+        router.get('/api/user/:uid/klips/',  AuthRoute.authenticateToken, UserRoute.getKlips)
 
         router.post('/api/login', AuthRoute.login)
         router.post('/api/register', AuthRoute.register)

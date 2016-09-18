@@ -39,13 +39,22 @@ class AuthRoute {
             //TODO check if activation code is still there
             if (!user)
                 return new JsonRes(res).fail({ message: 'Username or password no match' }, 401)
+            //Temporary disable it
 
             //TODO consider adding a status field to be more precise
-            // if account is not activated
-            if (user.email_token || user.email_expires != 0)
-                return new JsonRes(res).fail({ message: 'Account not activated' }, 401)
+            // account is not activated
+            // if (user.email_token || user.email_expires != 0)
+            //     return new JsonRes(res).fail({ message: 'Account not activated' }, 401)
 
-            return new JsonRes(res).success({ uid: user._id, token: user.token })
+            let userObj = {
+                uid: user.id,
+                email: user.email,
+                firends: user.friends,
+                join_date: user.join_date,
+                token: user.token,
+            }
+            //TODO add a last_login to db
+            return new JsonRes(res).success(userObj)
         })(req, res, next);
     }
 

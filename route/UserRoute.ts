@@ -41,8 +41,9 @@ export default class UserRoute {
         })
     }
     static getKlips(req, res, next) {
-        KlipModel.find().then((response) => {
-            console.log(response)
+        return KlipModel.find().then((response) => {
+            new JsonRes(res).success(response)
+next()
         })
     }
 

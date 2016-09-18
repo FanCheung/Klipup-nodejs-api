@@ -15,7 +15,6 @@ import * as Route from './route/Route'
 import * as Express from 'express'
 import * as mongoose from 'mongoose'
 import Db from './core/Db'
-import Registry = require('./Registry')
 import SocketServer from './core/SocketServer'
 import * as Promise from 'bluebird'
 import {Mail} from './core/Mail'
@@ -88,7 +87,6 @@ class App {
         }
         // Error catching
         this.app = app
-        Registry.set('app', this.app)
 
         this.db = new Db()
         //start database connection pool before starting app

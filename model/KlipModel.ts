@@ -2,7 +2,6 @@ let mongoose = require('mongoose')
 let _schema = new mongoose.Schema({
     uid: { type: mongoose.Schema.Types.ObjectId, ref: 'UserModel' },
     type: String,
-
     last_modified: { type: Date, default: Date.now },
     content: mongoose.Schema.Types.Mixed,
     description: String,

@@ -47,7 +47,6 @@ class AuthModel {
             }).then((result) => {
                 //if no user found create a new user
                 if (!result) {
-                    let token = this.issueToken(profile)
                     new UserModel({
                         'display_name': json.name,
                         'email': json.email,
@@ -102,7 +101,7 @@ class AuthModel {
             }).then((result: any) => {
                 //see if password matches
                 if (require('bcrypt').compareSync(password, result.password)) {
-                    result.token = this.issueToken(result._id, 3434000)
+                    result.token = this.issueToken({sub:result._id}, 3434000)
                     return Promise.resolve(result.save())
                 }
                 return Promise.reject('email or password doesnt match')
@@ -362,6 +361,7 @@ class AuthModel {
      * @return {Promise<any>}     [description]
      */
     public setCurrentUser(uid: String): Promise<any> {
+console.log(uid)
         return UserModel.findOne({ _id: uid }).then((result) => {
             if (result) {
                 this._currentUser = result
@@ -427,7 +427,9 @@ class AuthModel {
        * Extract token from authorization header
        * @return {Promise} [description]
        */
-    public extractToken(req): Promise<any> {
+    public extractToken(req): Promise<any>  {
+console.log(req.method)
+console.log(req.url)
         return new Promise((resolve, reject) => {
             let bearerHeader = req.headers["authorization"]
             if (typeof bearerHeader !== 'undefined') {
