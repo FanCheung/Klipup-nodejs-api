@@ -5,7 +5,6 @@
 // TODO:50 Weibo login
 // TODO:60 Yeild
 // TODO:130 move to github
-
 import * as passport from 'passport'
 import * as path from 'path';
 import * as logger from 'morgan';
@@ -61,7 +60,6 @@ class App {
 
         app.use(cookieParser());
         // allow cross origin requrest
-
 
         app.use(passport.initialize())
         app.use(passport.session())

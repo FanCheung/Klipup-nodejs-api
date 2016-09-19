@@ -41,6 +41,7 @@ export default class UserRoute {
     }
     static getKlips(req, res, next) {
         return KlipModel.find().then((response) => {
+console.log('get klips')
             new JsonRes(res).success(response)
 next()
         })
@@ -57,14 +58,11 @@ next()
         // record passed json header it gets auto parsed
         let record = req.body
         let currentUser = AuthModel.getCurrentUser()
-
         //TODO:140 perform a current user check against uid
         if (currentUser)
             KlipModel.addOne({ uid: currentUser, content: record.content, description: record.description }).then((result) => {
-                // TODO:70 got to check result it might not pass validation
                 // let KlipEvent = new Event()
                 event.emit('klipAdded', record)
-
                 new JsonRes(res).success()
             }).catch((e) => {
                 console.log('catchhhhhhhhhhhhhhh')

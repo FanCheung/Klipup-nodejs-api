@@ -81,20 +81,20 @@ class AuthRoute {
         new Promise((resolve, reject) => {
             AuthModel.extractToken(req).then((token) => {
                 return jwt.verify(token, CONFIG.AUTH.SECRET_KEY, function(err, payload) {
-                    if (err) {
+                    if (err)
                         return reject(new Error(err))
-
                         //if current user is equal id extracted
+// usr._id is type ObjectId
+
                         let user = AuthModel.getCurrentUser()
                         if (user && user._id.toString() == payload.sub) {
-                            return next()
+                             return next()
                         }
                         AuthModel.setCurrentUser(payload.sub).then(result => {
                             next()
                         })
                     })
             })
-
         }).then((error) => console.log('assed?')).catch((e) => {
             res.json({ fail: true })
             next(e)

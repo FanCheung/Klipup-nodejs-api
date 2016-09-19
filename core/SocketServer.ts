@@ -18,13 +18,13 @@ class SocketServer {
             secret: CONFIG.AUTH.SECRET_KEY,
             timeout: 15000 // 15 seconds to send the authentication message
         })).on('authenticated', (socket) => {
+
             event.on('klipAdded', function(record) {
                 socket.emit('klipAdded', record)
             })
 
             console.log(socket.decoded_token)
             //this socket i authenticated, we are good to handle more events from it.
-            console.log('hello! ' + socket.decoded_token.name);
         });
 
         // on disconnect event
