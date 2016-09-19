@@ -10,6 +10,7 @@ import AuthModel from '../model/AuthModel'
 import * as Promise from 'bluebird'
 import JsonRes from '../core/JsonRes'
 import * as LocalStrategy from 'passport-local'
+import * as mongoose from 'mongoose'
 
 class AuthRoute {
     constructor() {
@@ -81,13 +82,17 @@ class AuthRoute {
             AuthModel.extractToken(req).then((token) => {
                 return jwt.verify(token, CONFIG.AUTH.SECRET_KEY, function(err, payload) {
                     if (err) {
-                        // return Promise.reject(new Error(err))
                         return reject(new Error(err))
-                    } else
-                        AuthModel.setCurrentUser(payload.sub).then((result) => {
+
+                        //if current user is equal id extracted
+                        let user = AuthModel.getCurrentUser()
+                        if (user && user._id.toString() == payload.sub) {
+                            return next()
+                        }
+                        AuthModel.setCurrentUser(payload.sub).then(result => {
                             next()
                         })
-                })
+                    })
             })
 
         }).then((error) => console.log('assed?')).catch((e) => {
@@ -154,8 +159,10 @@ class AuthRoute {
     }
 
     public authenticateAcl(req, res, next) {
-        if (req.params.uid && req.params.uid == AuthModel.getCurrentUser())
+        //TODO verfiy with token maybe
+        if (req.params.uid && req.params.uid == AuthModel.getCurrentUser()._id) {
             next()
+        }
         else
             next(new Error('not powerful enough'))
     }
@@ -164,7 +171,6 @@ class AuthRoute {
         let {email, token} = req.query
         AuthModel.activate(email, token).then((user) => {
             //TODO: Consider auto login
-            console.log(user)
             return new JsonRes(res).success(user)
         }).catch((e) => {
             return new JsonRes(res).fail({ message: e.message })

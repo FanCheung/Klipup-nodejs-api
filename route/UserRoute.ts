@@ -15,7 +15,6 @@ export default class UserRoute {
      * @returns {void}
      */
     static getProfile(req, res, next) {
-        console.log('getProfile:')
         UserModel.findOne({ _id: req.params.uid }).then((response) => {
             new JsonRes(res).success(response)
             next()
@@ -63,7 +62,6 @@ next()
         if (currentUser)
             KlipModel.addOne({ uid: currentUser, content: record.content, description: record.description }).then((result) => {
                 // TODO:70 got to check result it might not pass validation
-                console.log('record added', record, result)
                 // let KlipEvent = new Event()
                 event.emit('klipAdded', record)
 
