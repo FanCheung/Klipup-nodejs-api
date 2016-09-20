@@ -23,7 +23,7 @@ export default class UserRoute {
         })
     }
 
-        static verifyEmail(res, req, next) {
+    static verifyEmail(res, req, next) {
         if (req.query.token) {
         }
     }
@@ -39,17 +39,19 @@ export default class UserRoute {
             res.json({ success: false })
         })
     }
+
     static getKlips(req, res, next) {
-        return KlipModel.find().then((response) => {
-console.log('get klips')
+        // TODO need test cases
+
+        return KlipModel.find({ uid: req.params.uid }).sort({last_modified: -1}).then((response) => {
             new JsonRes(res).success(response)
-next()
+            next()
         })
     }
 
 
     /**
-     * Expect j
+     * Expect
      * @param req
      * @param res
      * @param next
@@ -60,12 +62,12 @@ next()
         let currentUser = AuthModel.getCurrentUser()
         //TODO:140 perform a current user check against uid
         if (currentUser)
-            KlipModel.addOne({ uid: currentUser, content: record.content, description: record.description }).then((result) => {
+            KlipModel.addOne({ uid: currentUser._id, content: record.content, description: record.description }).then((result) => {
                 // let KlipEvent = new Event()
-                event.emit('klipAdded', record)
+                event.emit('klipAdded', result)
                 new JsonRes(res).success()
             }).catch((e) => {
-                console.log('catchhhhhhhhhhhhhhh')
+                console.warn(e)
                 next(e)
             })
         else

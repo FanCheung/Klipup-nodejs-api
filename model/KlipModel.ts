@@ -37,7 +37,7 @@ function getMany() {
 
 }
 function getUserKlip(uid) {
-    return this.find({ uid: uid })
+    return this.find({ uid: uid }).sort({last_modified: -1})
 }
 
 export = KlipModel

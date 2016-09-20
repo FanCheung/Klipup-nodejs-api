@@ -71,13 +71,13 @@ class App {
         let env = process.env.NODE_ENV || 'development';
 
         // development only
-        if (env === 'development') {
+        // if (env === 'development') {
             //Error catching
             app.use((error: any, req, res, next) => {
                 res.status(error['status'] || 500);
                 next(error)
             })
-        }
+        // }
 
         // production only
         if (env === 'production') {
