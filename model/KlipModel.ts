@@ -4,7 +4,7 @@ let _schema = new mongoose.Schema({
     type: String,
     last_modified: { type: Date, default: Date.now },
     content: mongoose.Schema.Types.Mixed,
-    description: String,
+    title: String,
     created_date: Date,
     tags: [String],
 })
@@ -40,4 +40,4 @@ function getUserKlip(uid) {
     return this.find({ uid: uid }).sort({last_modified: -1})
 }
 
-export = KlipModel
+export  {KlipModel}

@@ -2,6 +2,8 @@
 //TODO Authorisation header
 import * as  chai from 'chai'
 import * as CONFIG from './core/CONFIG'
+import * as io from 'socket.io'
+// import * as ioClient from
 let supertest = require('supertest')
 let api = supertest('http://localhost:5000');
 // let chai = require('chai')
@@ -160,12 +162,31 @@ describe('Forgot  and reset password', function() {
 */
 describe.only('Klips CRUD', function() {
     before('Authenticate', _login)
+
+    //Remove all data in the collection for integrity
+    before('Delete klips', function(done) {
+
+    })
+
     describe('Create', function() {
         it('Create a new record with valid jwt', function(done) {
+
         })
 
-        it('Create a new record with invalide jwt', function(done))
+        it('Create a new record with invalide jwt', function(done) {
+        })
     })
+    describe('Read', function() {
+        it('Read 10 records')
+        it('10')
+    })
+    describe('Update', function() {
+        it('Should update a record with provided id')
+        it('Should fail to update with an nonexisting id')
+        it('Should fail to update with empty content')
+
+    })
+
 })
 
 describe('tidy up', function() {

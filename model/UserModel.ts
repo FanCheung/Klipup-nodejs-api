@@ -1,4 +1,6 @@
-/**
+import AuthModel from './AuthModel'
+import {KlipModel} from './KlipModel'
+/*k
  * Singleton user model
  * will add another class implementation approach
  */
@@ -7,7 +9,7 @@ import * as Promise from 'bluebird'
 //set up schema
 let _schema = new mongoose.Schema({
     user_name: String,
-    display_name: { type: String},
+    display_name: { type: String },
     password: String,
     email: { type: String, unique: true, require: true },
     first_name: String,
@@ -15,7 +17,7 @@ let _schema = new mongoose.Schema({
     social_type: String, // google, faceboko etc
     social_account: String, // social profile json
     last_login: Date,
-    join_date: {type:Date,default:Date.now},
+    join_date: { type: Date, default: Date.now },
     token: String,
     thumb: String,
     ip: String,
@@ -37,7 +39,8 @@ _schema.statics = {
     getMany: getMany,
     deleteOne: deleteOne,
     updateOne: updateOne,
-    findOrCreate: findOrCreate
+    findOrCreate: findOrCreate,
+    addKlip: addKlip,
 }
 
 /**
@@ -48,7 +51,25 @@ _schema.methods = {
     deleteOne: deleteOne
 }
 
+
 let UserModel = mongoose.model(_modelName, _schema, 'users')
+function addKlip() {
+      let record = req.body
+        let currentUser = AuthModel.getCurrentUser()
+        //TODO:140 perform a current user check against uid
+        if (currentUser)
+            KlipModel.addOne({ uid: currentUser._id, content: record.content, title: record.title }).then((result) => {
+                // let KlipEvent = new Event()
+                event.emit('klipAdded', result)
+                new JsonRes(res).success()
+            }).catch((e) => {
+                console.warn(e)
+                next(e)
+            })
+        else
+            next(new Error('user not found'))
+}
+
 /**
  * add a single record
  */
