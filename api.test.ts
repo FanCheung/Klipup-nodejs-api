@@ -29,12 +29,23 @@ class TestRunner {
     socket = null
     db = null
     users = null
-    authoriedUser
-    token
-
+    authorizedUser = null
+    token = ''
+    static URL = { socket: 'http://localhost:5000' }
     static USER_DATA = {
         email: 'user@user.com',
         password: '999'
+    }
+
+    socketAuth(done) {
+        let socket = this.socket = io(TestRunner.URL.socket)
+        this.socket.emit('authenticate', { token: this.token })
+            .on('authenticated', (socket) => {
+                done()
+            })
+        this.socket.on("unauthorized", function(error, callback) {
+            if (error) throw error
+        });
     }
 
     login(done) {
@@ -43,7 +54,8 @@ class TestRunner {
             this.users = db.collection('users')
             this.users.deleteMany({})
         });
-        api.post('/api/register').send({ user_email: TestRunner.USER_DATA.email, user_password: TestRunner.USER_DATA.password }).expect(200, (error, result)=> {
+        api.post('/api/register').send({ user_email: TestRunner.USER_DATA.email, user_password: TestRunner.USER_DATA.password }).expect(200, (error, result) => {
+
             if (error)
                 throw error
 
@@ -52,18 +64,19 @@ class TestRunner {
 
             assert.equal(result.body.data.userEmail, TestRunner.USER_DATA.email)
             this.users.findOne({ email: TestRunner.USER_DATA.email }, (err, result) => {
-                this.authoriedUser = result;
+                this.authorizedUser = result;
                 // activate the account
-                let activationLink = '/api/activate/?email=' + this.authoriedUser.email + '&token=' + this.authoriedUser.email_token;
-                api.get(activationLink).expect(200, function(error, res) {
+                let activationLink = '/api/activate/?email=' + this.authorizedUser.email + '&token=' + this.authorizedUser.email_token;
+                api.get(activationLink).expect(200, (error, res)=>{
                     assert.equal(res.body.data.email_token, null, 'why the toekn still in db!!');
                     assert.equal(res.body.data.email_expires, 0, 'Should expire expire');
 
-                    api.post('/api/login').send({ username: USER_DATA.email, password: USER_DATA.password }).expect(200, (err, result)=> {
+                    api.post('/api/login').send({ username: TestRunner.USER_DATA.email, password: TestRunner.USER_DATA.password }).expect(200, (err, result) => {
                         this.token = result.body.data.token
                         assert(result.body.data.token, 'jwt token not available');
                         assert(result.body.data.uid, 'uid not available');
                         done();
+
                     });
                 })
             });
@@ -74,35 +87,6 @@ class TestRunner {
 }
 
 
-let _login = function(done) {
-    MongoClient.connect(DB_URL, function(err, result) {
-        db = result;
-        _users = db.collection('users')
-        _users.deleteMany({})
-    });
-
-    api.post('/api/register').send({ user_email: USER_DATA.email, user_password: USER_DATA.password }).expect(200, function(error, result) {
-        assert.equal(result.body.data.userEmail, USER_DATA.email)
-
-        _users.findOne({ email: USER_DATA.email }, (err, result) => {
-            TEST_DATA.user = result;
-            // activate the account
-            let activationLink = '/api/activate/?email=' + _user.email + '&token=' + _user.email_token;
-            api.get(activationLink).expect(200, function(error, res) {
-                assert.equal(res.body.data.email_token, null, 'why the toekn still in db!!');
-                assert.equal(res.body.data.email_expires, 0, 'Should expire expire');
-
-                api.post('/api/login').send({ username: USER_DATA.email, password: USER_DATA.password }).expect(200, function(err, result) {
-                    CONFIG.token = result.body.data.token
-                    assert(result.body.data.token, 'jwt token not available');
-                    assert(result.body.data.uid, 'uid not available');
-                    done();
-                });
-            })
-        });
-    })
-
-}
 
 function connectDb(DB_URL = 'mongodb://localhost:27017/klipup') {
     return new Promise(function(resolve, reject) {
@@ -210,37 +194,31 @@ describe('Forgot  and reset password', function() {
 /**
 * [describe description]
 */
-function socketAuth(done) {
-    let socket = TEST_DATA.socket = io('http://localhost:5000')
-    TEST_DATA.socket.emit('authenticate', { token: TEST_DATA.token })
-        .on('authenticated', (socket) => {
+
+describe.only('Klips CRUD', function() {
+
+    let testRunner = new TestRunner()
+
+    before('Authenticate', function(done) {
+        testRunner.login(done)
+    })
+
+    before('connect to socket', function(done) {
+        testRunner.socketAuth(done)
+    })
+
+    //Remove all data in the collection for integrity
+    describe('Delete klips', function() {
+        it('Create a new record with valid jwt', function(done) {
             done()
         })
 
-    TEST_DATA.socket.on("unauthorized", function(error, callback) {
-        if (error) throw error
-    });
-
-}
-describe.only('Klips CRUD', function() {
-    let testRunner = new TestRunner()
-
-    let a = before('Authenticate', function(done) {
-        return testRunner.login(done)
-    })
-
-    console.log(a)
-    // before('connect to socket',socketAuth)
-
-    //Remove all data in the collection for integrity
-    before('Delete klips', function(done) {
-        it('Create a new record with valid jwt', function(done) {
-
-        })
         it('should receive an emit from socket', function(done) {
-
+            done()
         })
+
         it('Create a new record with invalide jwt', function(done) {
+            done()
         })
     })
 
@@ -249,6 +227,7 @@ describe.only('Klips CRUD', function() {
         it('Read 10 records')
         it('10')
     })
+
     describe('Update', function() {
         it('Should update a record with provided id')
         it('Should fail to update with an nonexisting id')
@@ -258,7 +237,7 @@ describe.only('Klips CRUD', function() {
 
     after(function(done) {
         // disconnect io clients after each test
-        io.disconnect()
+        // io.disconnect()
         done()
     })
 
