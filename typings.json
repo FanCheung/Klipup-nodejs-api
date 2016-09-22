@@ -24,6 +24,7 @@
     "passport-strategy": "registry:dt/passport-strategy#0.2.0+20160316155526",
     "serve-static": "registry:dt/serve-static#0.0.0+20160606155157",
     "socket.io": "registry:dt/socket.io#1.4.4+20160317120654",
+    "socket.io-client": "registry:dt/socket.io-client#1.4.4+20160317120654",
     "validator": "registry:dt/validator#4.5.1+20160316155526"
   }
 }

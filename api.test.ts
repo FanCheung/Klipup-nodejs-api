@@ -92,7 +92,10 @@ class TestRunner {
                     return resolve(result.body.data.token)
                 })
             })
+
             done()
+            return Promise.resolve(this.token)
+
         } catch (e) {
             console.error(e)
             throw e
@@ -230,47 +233,55 @@ describe.only('Klips CRUD', function() {
     before('connect to socket', function(done) {
         testRunner.socketAuth(done)
     })
-
     //Remove all data in the collection for integrity
 
-    before('clear klips', function(done) {
+    before('Clear klips', function(done) {
         testRunner.clearKlips(done)
     })
-    describe('Add klips', function() {
-        it('It should not find any klips', function(done) {
+
+    describe('Check db is empty', function() {
+        it('Should not find any klips', function(done) {
             let klips = testRunner.db.collection('klips');
             klips.find({}).toArray((err, results) => {
                 console.log('result.length', results.length)
                 done()
             })
         })
+    })
 
-        it('Create a new record with invalide jwt', function(done) {
-            done()
+    describe('Add a klip ', function() {
+
+        it('Should find an klip entry in db', function(done) {
+            var klipsCollection = testRunner.db.collection('klips');
+
         })
 
     })
 
     describe('Read', function() {
+
         it('Read 10 records')
+
         it('10')
     })
 
     describe('Update', function() {
+
         it('Should update a record with provided id')
+
         it('Should fail to update with an nonexisting id')
+
         it('Should fail to update with empty content')
 
     })
-})
 
 
 
-after(function(done) {
-    // disconnect io clients after each test
-    // io.disconnect()
-    done()
-})
+    after(function(done) {
+        // disconnect io clients after each test
+        // io.disconnect()
+        done()
+    })
 
 })
 
