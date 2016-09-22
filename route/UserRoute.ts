@@ -29,8 +29,8 @@ export default class UserRoute {
     }
 
     static resendEmailVerification() {
-
     }
+
     static removeUser(req, res, next) {
         UserModel.deleteOne(req.params.uid).then((response) => {
             new JsonRes(res).success(response)
@@ -42,6 +42,7 @@ export default class UserRoute {
 
     static getKlips(req, res, next) {
         // TODO need test cases move to user model
+
         return KlipModel.find({ uid: req.params.uid }).sort({ last_modified: -1 }).then((response) => {
             if (!response)
                 return new JsonRes(res).fail('fail to fetch getKlip')

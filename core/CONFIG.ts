@@ -1,4 +1,3 @@
-
 require('./ENV.js')
 module CONFIG {
     export let AUTH = {
@@ -11,9 +10,7 @@ module CONFIG {
             enableProof: true
         },
 
-        GOOGLE: {
-
-        },
+        GOOGLE: { },
 
         WEIBO: {
 
@@ -41,4 +38,5 @@ module CONFIG {
 
     }
 }
-export =CONFIG
+
+export {CONFIG}

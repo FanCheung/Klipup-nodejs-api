@@ -6,6 +6,7 @@ import {KlipModel} from './KlipModel'
  */
 var mongoose = require('mongoose')
 import * as Promise from 'bluebird'
+
 //set up schema
 let _schema = new mongoose.Schema({
     user_name: String,
@@ -30,6 +31,7 @@ let _schema = new mongoose.Schema({
 })
 
 let _modelName = 'UserModel'
+
 let _pageSize = 10
 
 /**
@@ -51,8 +53,8 @@ _schema.methods = {
     deleteOne: deleteOne
 }
 
-
 let UserModel = mongoose.model(_modelName, _schema, 'users')
+
 function addKlip() {
       let record = req.body
         let currentUser = AuthModel.getCurrentUser()
@@ -112,4 +114,5 @@ function updateOne(uid) {
         { $set: { last_modified: Date.now() } }
     )
 }
+
 export = UserModel

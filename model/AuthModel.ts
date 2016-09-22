@@ -1,11 +1,12 @@
 import * as jwt from 'jsonwebtoken'
-import * as CONFIG from '../core/CONFIG'
+import {CONFIG} from '../core/Main'
 import * as UserModel from '../model/UserModel'
 import * as LocalStrategy from 'passport-local'
 import * as FacebookStrategy from 'passport-facebook'
 import * as passport from 'passport'
 import * as validator from 'validator'
 import { Mail } from '../core/Mail'
+
 /**
  * Handle all authentication related activities
  */

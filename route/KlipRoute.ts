@@ -2,15 +2,17 @@ import AuthModel from '../model/AuthModel'
 
 class KlipRoute {
 
-  consstructor() {
+  constructor() {
   }
 
+getByTag(){
 
+}
 
   static delete() {
 
   }
-static getKlips(){}
+static getMany(){}
 
 }
 

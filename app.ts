@@ -16,14 +16,14 @@ import * as mongoose from 'mongoose'
 import Db from './core/Db'
 import SocketServer from './core/SocketServer'
 import * as Promise from 'bluebird'
-import {Mail} from './core/Mail'
+import { Mail } from './core/Mail'
 import * as _ from 'lodash'
-
+import { JsonRes } from './core/Util'
 global.Promise = Promise
 var chalk = require('chalk')
 
-global.log = function(text='',color='white')  {
- console.log(chalk['yellow'](text))
+global.log = function(text = '', color = 'white') {
+    console.log(chalk['yellow'](text))
 }
 /**
  * App
@@ -72,11 +72,13 @@ class App {
 
         // development only
         // if (env === 'development') {
-            //Error catching
-            app.use((error: any, req, res, next) => {
-                res.status(error['status'] || 500);
-                next(error)
-            })
+        //Error catching
+        app.use((error: any, req, res, next) => {
+            console.log('GLOBAL ERROR CATCHER : ')
+            res.status(error['status'] || 500);
+            return new JsonRes(res).fail({ message: e.message })
+
+        })
         // }
 
         // production only

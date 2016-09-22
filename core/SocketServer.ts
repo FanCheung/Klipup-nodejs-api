@@ -1,24 +1,24 @@
 import { event } from './Event'
 var socketioJwt = require('socketio-jwt')
-import * as CONFIG from './CONFIG'
+import {CONFIG} from './Main'
 
 class SocketServer {
+
     public server
     private _io
     static start(server) {
+
         return new SocketServer(server)
     }
     constructor(server?) {
         this._io = require('socket.io')(server)
         this._io.on('connection', (socket) => {
-
         })
 
         this._io.on('connection', socketioJwt.authorize({
             secret: CONFIG.AUTH.SECRET_KEY,
             timeout: 15000 // 15 seconds to send the authentication message
         })).on('authenticated', (socket) => {
-
             event.on('klipAdded', function(record) {
                 socket.emit('klipAdded', record)
             })

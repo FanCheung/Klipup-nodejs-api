@@ -4,7 +4,7 @@
 import * as passport from 'passport'
 import * as FacebookStrategy from 'passport-facebook'
 var jwt = require("jsonwebtoken")
-import * as CONFIG from '../core/CONFIG'
+import { CONFIG } from '../core/Main'
 import * as UserModel from '../model/UserModel'
 import AuthModel from '../model/AuthModel'
 import * as Promise from 'bluebird'
@@ -75,7 +75,6 @@ class AuthRoute {
         })
     }
 
-
     //middleware
     public authenticateToken(req, res, next) {
         new Promise((resolve, reject) => {
@@ -83,17 +82,16 @@ class AuthRoute {
                 return jwt.verify(token, CONFIG.AUTH.SECRET_KEY, function(err, payload) {
                     if (err)
                         return reject(new Error(err))
-                        //if current user is equal id extracted
-// usr._id is type ObjectId
-
-                        let user = AuthModel.getCurrentUser()
-                        if (user && user._id.toString() == payload.sub) {
-                             return next()
-                        }
-                        AuthModel.setCurrentUser(payload.sub).then(result => {
-                            next()
-                        })
+                    //if current user is equal id extracted
+                    // usr._id is type ObjectId
+                    let user = AuthModel.getCurrentUser()
+                    if (user && user._id.toString() == payload.sub) {
+                        return next()
+                    }
+                    AuthModel.setCurrentUser(payload.sub).then(result => {
+                        next()
                     })
+                })
             })
         }).then((error) => console.log('assed?')).catch((e) => {
             res.json({ fail: true })

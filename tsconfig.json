@@ -21,6 +21,7 @@
     "core/Singleton.ts",
     "core/SocketServer.ts",
     "core/Util.ts",
+    "core/Main.ts",
     "model/AuthModel.ts",
     "model/KlipModel.ts",
     "model/UserModel.ts",
