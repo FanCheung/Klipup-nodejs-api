@@ -102,14 +102,12 @@ class TestRunner {
     /**
     * Clear all klips
     */
-    clearKlips(done):void {
+    clearKlips(done): void {
         let klips = this.db.collection('klips');
         klips.deleteMany({}, error => assert(!error))
         done()
     }
 }
-
-
 
 function connectDb(DB_URL = 'mongodb://localhost:27017/klipup') {
     return new Promise(function(resolve, reject) {
@@ -234,27 +232,24 @@ describe.only('Klips CRUD', function() {
     })
 
     //Remove all data in the collection for integrity
-    describe('Delete klips', function() {
-        before('clear klips', function(done) {
-            testRunner.clearKlips(done)
-        })
 
-        it('Create a new record with valid jwt', function(done) {
+    before('clear klips', function(done) {
+        testRunner.clearKlips(done)
+    })
+    describe('Add klips', function() {
+        it('It should not find any klips', function(done) {
             let klips = testRunner.db.collection('klips');
-
-            klips.deleteMany({}, error => assert(!error))
-            done()
-        })
-
-        it('should receive an emit from socket', function(done) {
-            done()
+            klips.find({}).toArray((err, results) => {
+                console.log('result.length', results.length)
+                done()
+            })
         })
 
         it('Create a new record with invalide jwt', function(done) {
             done()
         })
-    })
 
+    })
 
     describe('Read', function() {
         it('Read 10 records')
@@ -267,12 +262,15 @@ describe.only('Klips CRUD', function() {
         it('Should fail to update with empty content')
 
     })
+})
 
-    after(function(done) {
-        // disconnect io clients after each test
-        // io.disconnect()
-        done()
-    })
+
+
+after(function(done) {
+    // disconnect io clients after each test
+    // io.disconnect()
+    done()
+})
 
 })
 
