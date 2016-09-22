@@ -1,4 +1,3 @@
-
 //TODO Authorisation header
 import * as  chai from 'chai'
 import * as CONFIG from './core/CONFIG'
@@ -52,8 +51,8 @@ class TestRunner {
     async login(done) {
 
         MongoClient.connect(DB_URL, (err, result) => {
-            db = result;
-            this.users = db.collection('users')
+            this.db = result;
+            this.users = this.db.collection('users')
             this.users.deleteMany({})
         });
 
@@ -99,6 +98,15 @@ class TestRunner {
             throw e
         }
     }
+
+    /**
+    * Clear all klips
+    */
+    clearKlips(done):void {
+        let klips = this.db.collection('klips');
+        klips.deleteMany({}, error => assert(!error))
+        done()
+    }
 }
 
 
@@ -114,10 +122,13 @@ function connectDb(DB_URL = 'mongodb://localhost:27017/klipup') {
 
 
 describe('Db tests', function() {
+
     before(function(done) {
         // clean db here
     })
+
     it('should clear the db', function() { })
+
     it('should not return error object', function(done) {
         MongoClient.connect('mongodb://localhost:27017/klipup', function(err, db) {
             expect(err).to.equal(null)
@@ -224,7 +235,14 @@ describe.only('Klips CRUD', function() {
 
     //Remove all data in the collection for integrity
     describe('Delete klips', function() {
+        before('clear klips', function(done) {
+            testRunner.clearKlips(done)
+        })
+
         it('Create a new record with valid jwt', function(done) {
+            let klips = testRunner.db.collection('klips');
+
+            klips.deleteMany({}, error => assert(!error))
             done()
         })
 
