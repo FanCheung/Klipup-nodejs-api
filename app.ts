@@ -76,8 +76,7 @@ class App {
         app.use((error: any, req, res, next) => {
             console.log('GLOBAL ERROR CATCHER : ')
             res.status(error['status'] || 500);
-            return new JsonRes(res).fail({ message: e.message })
-
+            return new JsonRes(res).fail({ message: error.message })
         })
         // }
 

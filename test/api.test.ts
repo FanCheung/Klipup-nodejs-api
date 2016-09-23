@@ -2,6 +2,7 @@
 import * as  chai from 'chai'
 import * as CONFIG from './core/CONFIG'
 import * as io from 'socket.io-client'
+import * as TestRunner from './TestRunner'
 
 // import * as ioClient from
 let supertest = require('supertest')
@@ -24,93 +25,6 @@ const USER_DATA = {
     password: '999'
 }
 
-class TestRunner {
-    socket = null
-    db = null
-    users = null
-    authorizedUser = null
-    token = ''
-    static URL = { socket: 'http://localhost:5000' }
-    static USER_DATA = {
-        email: 'user@user.com',
-        password: '999'
-    }
-
-    socketAuth(done) {
-        let socket = this.socket = io(TestRunner.URL.socket)
-        this.socket.emit('authenticate', { token: this.token })
-            .on('authenticated', (socket) => {
-                done()
-            })
-
-        this.socket.on("unauthorized", function(error, callback) {
-            if (error) throw error
-        });
-    }
-
-    async login(done) {
-
-        MongoClient.connect(DB_URL, (err, result) => {
-            this.db = result;
-            this.users = this.db.collection('users')
-            this.users.deleteMany({})
-        });
-
-        try {
-            await new Promise(resolve => {
-                api.post('/api/register').send({ user_email: TestRunner.USER_DATA.email, user_password: TestRunner.USER_DATA.password }).expect(200, (error, result) => {
-                    if (error)
-                        throw error
-                    if (!result)
-                        throw 'Register failed'
-                    return resolve(result)
-                })
-            })
-
-            this.authorizedUser = await new Promise(resolve => {
-                this.users.findOne({ email: TestRunner.USER_DATA.email }, (err, result) => {
-                    this.authorizedUser = result;
-                    // activate the account
-                    return resolve(result)
-                })
-            })
-
-            let activationLink = '/api/activate/?email=' + this.authorizedUser.email + '&token=' + this.authorizedUser.email_token;
-
-            await new Promise(resolve => {
-                api.get(activationLink).expect(200, (error, res) => {
-                    assert.equal(res.body.data.email_token, null, 'why the toekn still in db!!');
-                    assert.equal(res.body.data.email_expires, 0, 'Should expire expire');
-                    resolve(true)
-                })
-            })
-
-            this.token = await new Promise(resolve => {
-                api.post('/api/login').send({ username: TestRunner.USER_DATA.email, password: TestRunner.USER_DATA.password }).expect(200, (err, result) => {
-                    assert(result.body.data.token, 'jwt token not available');
-                    assert(result.body.data.uid, 'uid not available');
-                    return resolve(result.body.data.token)
-                })
-            })
-
-            done()
-            return Promise.resolve(this.token)
-
-        } catch (e) {
-            console.error(e)
-            throw e
-        }
-    }
-
-    /**
-    * Clear all klips
-    */
-    clearKlips(done): void {
-        let klips = this.db.collection('klips');
-        klips.deleteMany({}, error => assert(!error))
-        done()
-    }
-}
 
 function connectDb(DB_URL = 'mongodb://localhost:27017/klipup') {
     return new Promise(function(resolve, reject) {
@@ -225,7 +139,6 @@ describe('Forgot  and reset password', function() {
 describe.only('Klips CRUD', function() {
 
     let testRunner = new TestRunner()
-
     before('Authenticate', function(done) {
         testRunner.login(done)
     })
@@ -234,7 +147,6 @@ describe.only('Klips CRUD', function() {
         testRunner.socketAuth(done)
     })
     //Remove all data in the collection for integrity
-
     before('Clear klips', function(done) {
         testRunner.clearKlips(done)
     })
@@ -243,17 +155,22 @@ describe.only('Klips CRUD', function() {
         it('Should not find any klips', function(done) {
             let klips = testRunner.db.collection('klips');
             klips.find({}).toArray((err, results) => {
-                console.log('result.length', results.length)
+                //record set length equal to zero
+                assert.equal(results.length, 0)
                 done()
             })
         })
     })
 
     describe('Add a klip ', function() {
-
-        it('Should find an klip entry in db', function(done) {
+        it('Should add klip with loggined user', function(done) {
             var klipsCollection = testRunner.db.collection('klips');
-
+            let uid=console.log(testRunner.authorizedUser._id)
+            api.post(`/api/user/${uid}/klip/add`).send({ username: USER_DATA.email, password: USER_DATA.password }).expect(200, function(err, result) {
+                assert(result.body.data.token, 'jwt token not available')
+                assert(result.body.data.uid, 'uid not available')
+                done()
+            })
         })
 
     })
