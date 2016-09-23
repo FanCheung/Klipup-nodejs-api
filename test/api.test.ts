@@ -136,27 +136,29 @@ describe('Forgot  and reset password', function() {
 */
 
 describe.only('Klips CRUD', function() {
+
     let testRunner = new TestRunner()
     before('Authenticate', function(done) {
         testRunner.login(done)
     })
-
-    before('connect to socket', function(done) {
-
-        testRunner.socketAuth().then((socket) => {
-            // test.Runner.socket.on('klipAdded', (data) => {
-            //     console.log('klipadddfasdfasf')
-            // })
-            done()
-        })
-    })
-
+    //
+    // before('connect to socket', function(done) {
+    //
+    //     testRunner.socketAuth().then((socket) => {
+    //         testRunner.socket.on('klipAdded', (data) => {
+    //             console.log('klipadddfasdfasf')
+    //         })
+    //         done()
+    //     })
+    // })
+    //
     //Remove all data in the collection for integrity
     before('Clear klips', function(done) {
         testRunner.clearKlips(done)
     })
 
     describe('Check db is empty', function() {
+
         it('Should not find any klips', function(done) {
             let klips = testRunner.db.collection('klips');
             klips.find({}).toArray((err, results) => {
@@ -167,47 +169,53 @@ describe.only('Klips CRUD', function() {
         })
     })
 
-
     describe('Add a klip ', function() {
+
         it('Should add klip with emit a socket even with returned klip data', function(done) {
-            new Promise(resolve => {
-                testRunner.socketAuth().then((socket) => {
-                    // this is a round trip teset only pass if it arrive at socket
-                    socket.on('klipAdded', (data) => {
-                        done()
-                    })
-                    resolve()
-                })
-            }).then(resolve => {
-                var klipsCollection = testRunner.db.collection('klips');
-                api.post(`/api/user/${testRunner.authorizedUser._id}/klip/add`).send(TestRunner.KLIP_DATA)
-                    .set('Authorization', 'Bearer ' + testRunner.token)
-                    .expect(200, function(err, result) {
-                    })
-                //authorized socket connnection should be available now
+            // this is a round trip teset only pass if it arrive at socket
+            testRunner.socket.on('klipAdded', (data) => {
+                assert.equal(TestRunner.KLIP_DATA.content, data.content)
+                assert.equal(TestRunner.KLIP_DATA.title, data.title)
+                done()
+                testRunner.socket.disconnect()
             })
+            //post new klip and server will emit socket event
+            var klipsCollection = testRunner.db.collection('klips');
+            api.post(`/api/user/${testRunner.authorizedUser._id}/klip/add`).send(TestRunner.KLIP_DATA)
+                .set('Authorization', 'Bearer ' + testRunner.token)
+                .expect(200,function(){
+console.log('ldfkasdf')
+})
         })
+
+        // it('Should reject klip with missing content', function(done) {
+        //
+        //     var klipsCollection = testRunner.db.collection('klips');
+        //     api.post(`/api/user/${testRunner.authorizedUser._id}/klip/add`).send({title:'test title'})
+        //         .set('Authorization', 'Bearer ' + testRunner.token)
+        //         .expect(500,done)
+        // })
+
     })
 
-})
 
-describe('Update', function() {
+    describe('Update', function() {
 
-    it('Should update a record with provided id')
+        it('Should update a record with provided id')
 
-    it('Should fail to update with an nonexisting id')
+        it('Should fail to update with an nonexisting id')
 
-    it('Should fail to update with empty content')
+        it('Should fail to update with empty content')
 
-})
-
+    })
 
 
-after(function(done) {
-    // disconnect io clients after each test
-    // io.disconnect()
-    done()
-})
+
+    after(function(done) {
+        // disconnect io clients after each test
+        // io.disconnect()
+        done()
+    })
 
 })
 

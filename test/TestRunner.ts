@@ -27,12 +27,11 @@ export class TestRunner {
         return new Promise((resolve, reject) => {
             this.socket.emit('authenticate', { token: this.token })
                 .on('authenticated', (socket) => {
-  // this.socket.on('klipAdded', (data) => {
-  //     console.log('klipadddfasdfasf',data)
-  // })
+                    // this.socket.on('klipAdded', (data) => {
+                    //     console.log('klipadddfasdfasf',data)
+                    // })
                     resolve(this.socket)
                 })
-
             this.socket.on("unauthorized", function(error, callback) {
                 if (error) throw error
             });
