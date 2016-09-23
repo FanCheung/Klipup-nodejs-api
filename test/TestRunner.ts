@@ -1,30 +1,48 @@
+var MongoClient = require('mongodb').MongoClient
+import * as assert from 'assert'
+import * as io from 'socket.io-client'
+let supertest = require('supertest')
+let api = supertest('http://localhost:5000');
+
 export class TestRunner {
     socket = null
     db = null
     users = null
     authorizedUser = null
     token = null
+
+    static DB_URL = 'mongodb://localhost:27017/klipup'
     static URL = { socket: 'http://localhost:5000' }
     static USER_DATA = {
         email: 'user@user.com',
-        password: '999'
+        password: '999',
+    }
+    static KLIP_DATA = {
+        title: 'This is a test title',
+        content: 'Some kip content',
     }
 
-    socketAuth(done) {
+    socketAuth() {
         let socket = this.socket = io(TestRunner.URL.socket)
-        this.socket.emit('authenticate', { token: this.token })
-            .on('authenticated', (socket) => {
-                done()
-            })
+        return new Promise((resolve, reject) => {
+            this.socket.emit('authenticate', { token: this.token })
+                .on('authenticated', (socket) => {
+  // this.socket.on('klipAdded', (data) => {
+  //     console.log('klipadddfasdfasf',data)
+  // })
+                    resolve(this.socket)
+                })
 
-        this.socket.on("unauthorized", function(error, callback) {
-            if (error) throw error
-        });
+            this.socket.on("unauthorized", function(error, callback) {
+                if (error) throw error
+            });
+        })
+
     }
 
     async login(done) {
 
-        MongoClient.connect(DB_URL, (err, result) => {
+        MongoClient.connect(TestRunner.DB_URL, (err, result) => {
             this.db = result;
             this.users = this.db.collection('users')
             this.users.deleteMany({})
@@ -66,7 +84,6 @@ export class TestRunner {
                     return resolve(result.body.data.token)
                 })
             })
-
             done()
             return Promise.resolve(this.token)
 
