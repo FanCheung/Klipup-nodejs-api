@@ -1,6 +1,6 @@
 import * as UserModel from '../model/UserModel'
 import JsonRes from '../core/JsonRes'
-import {KlipModel} from '../model/KlipModel'
+import { KlipModel } from '../model/KlipModel'
 import AuthModel from '../model/AuthModel'
 import SocketServer from '../core/SocketServer'
 import { event } from '../core/Event'
@@ -58,26 +58,40 @@ export default class UserRoute {
      */
     static addKlip(req, res, next) {
         // record passed json header it gets auto parsed
+        let uid = req.params.uid
         let record = req.body
-        let currentUser = AuthModel.getCurrentUser()
-        //TODO:140 perform a current user check against uid
-        if (currentUser)
-            KlipModel.addOne({ uid: currentUser._id, content: record.content, title: record.title }).then((result) => {
-                // let KlipEvent = new Event()
-                event.emit('klipAdded', result)
-                new JsonRes(res).success()
-            }).catch((e) => {
-                console.warn(e)
-                next(e)
-            })
-        else
-            next(new Error('user not found'))
+
+        if (!req.body.content.trim())
+            return next('missing content')
+
+        UserModel.addKlip(record,uid ).then(result => {
+            return new JsonRes(res).success(result)
+        }
+        ).catch(e => next(e))
+
+    }
+
+    static deleteKlip(req, res, next) {
+        let kid = req.params.kid
+        let uid = AuthModel.getCurrentUser()._id
+
+        //TODO move to middleware
+        if (req.params.uid !== uid.toString())
+            return next('not authorized')
+
+        KlipModel.findOne({ _id: kid }).then((result) => {
+            result.remove()
+            return new JsonRes(res).success(result)
+        }).catch(e => next(e))
+
     }
 
     static updateUser(req, res, next) {
+
     }
 
     static getAll(req, res, next) {
+
     }
 
     static addUser(req, res, next) {

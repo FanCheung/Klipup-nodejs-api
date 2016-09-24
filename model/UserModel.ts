@@ -1,5 +1,8 @@
+import { JsonRes } from '../core/Util'
 import AuthModel from './AuthModel'
-import {KlipModel} from './KlipModel'
+import { KlipModel } from './KlipModel'
+import {event} from '../core/Event'
+
 /*k
  * Singleton user model
  * will add another class implementation approach
@@ -34,6 +37,7 @@ let _modelName = 'UserModel'
 
 let _pageSize = 10
 
+
 /**
  * Setup static method
  */
@@ -55,21 +59,24 @@ _schema.methods = {
 
 let UserModel = mongoose.model(_modelName, _schema, 'users')
 
-function addKlip() {
-      let record = req.body
-        let currentUser = AuthModel.getCurrentUser()
-        //TODO:140 perform a current user check against uid
-        if (currentUser)
-            KlipModel.addOne({ uid: currentUser._id, content: record.content, title: record.title }).then((result) => {
-                // let KlipEvent = new Event()
-                event.emit('klipAdded', result)
-                new JsonRes(res).success()
-            }).catch((e) => {
-                console.warn(e)
-                next(e)
-            })
-        else
-            next(new Error('user not found'))
+function addKlip(record = null, uid=null) {
+
+    if (!record)
+        return Promise.reject('Record not found')
+
+//uid route param does not equal to current user
+    if (!uid && uid !== AuthModel.getCurrentUser()._id.toString())
+        return Promise.reject('User not found')
+
+    //TODO:140 perform a current user check against uid
+    return new Promise((resolve, reject) => {
+        KlipModel.addOne({ uid: uid, content: record.content, title: record.title }).then((result) => {
+            // let KlipEvent = new Event()
+            event.emit('klipAdded', result)
+            resolve(result)
+        })
+    })
+
 }
 
 /**

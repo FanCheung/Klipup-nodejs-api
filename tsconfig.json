@@ -12,7 +12,8 @@
   "files": [
     "typings/index.d.ts",
     "app.ts",
-    "api.test.ts",
+    "test/api.test.ts",
+    "test/TestRunner.ts",
     "core/CONFIG.ts",
     "core/Db.ts",
     "core/Mail.ts",

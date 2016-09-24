@@ -17,6 +17,7 @@ _schema.statics = {
     getMany: getMany,
     getUserKlip: getUserKlip
 }
+
 let KlipModel = mongoose.model(_modelName, _schema, 'klips')
 
 function addOne(obj) {

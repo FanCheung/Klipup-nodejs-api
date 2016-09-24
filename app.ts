@@ -63,7 +63,6 @@ class App {
 
         app.use(passport.initialize())
         app.use(passport.session())
-        console.log(path.join(__dirname, '/../react'))
         app.use(Express.static(path.join(__dirname, '/../react')))
         app.use(Route.init())
 
@@ -74,9 +73,10 @@ class App {
         // if (env === 'development') {
         //Error catching
         app.use((error: any, req, res, next) => {
-            console.log('GLOBAL ERROR CATCHER : ')
+            console.log('GLOBAL ERROR CATCHER : ',error)
             res.status(error['status'] || 500);
-            return new JsonRes(res).fail({ message: error.message })
+            return new JsonRes(res).fail({ message: error })
+//add a logger
         })
         // }
 
