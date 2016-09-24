@@ -141,17 +141,16 @@ describe.only('Klips CRUD', function() {
     before('Authenticate', function(done) {
         testRunner.login(done)
     })
-    //
-    // before('connect to socket', function(done) {
-    //
-    //     testRunner.socketAuth().then((socket) => {
-    //         testRunner.socket.on('klipAdded', (data) => {
-    //             console.log('klipadddfasdfasf')
-    //         })
-    //         done()
-    //     })
-    // })
-    //
+
+    before('connect to socket', function(done) {
+        testRunner.socketAuth().then((socket) => {
+            // testRunner.socket.on('klipAdded', (data) => {
+            //     console.log('klipadddfasdfasf')
+            // })
+            done()
+        })
+    })
+
     //Remove all data in the collection for integrity
     before('Clear klips', function(done) {
         testRunner.clearKlips(done)
@@ -176,28 +175,53 @@ describe.only('Klips CRUD', function() {
             testRunner.socket.on('klipAdded', (data) => {
                 assert.equal(TestRunner.KLIP_DATA.content, data.content)
                 assert.equal(TestRunner.KLIP_DATA.title, data.title)
+                // assert.equal(TestRunner.authorizedUser._id)
                 done()
                 testRunner.socket.disconnect()
             })
             //post new klip and server will emit socket event
-            var klipsCollection = testRunner.db.collection('klips');
-            api.post(`/api/user/${testRunner.authorizedUser._id}/klip/add`).send(TestRunner.KLIP_DATA)
+            api.put(`/api/user/${testRunner.authorizedUser._id}/klip`).send(TestRunner.KLIP_DATA)
                 .set('Authorization', 'Bearer ' + testRunner.token)
-                .expect(200,function(){
-console.log('ldfkasdf')
-})
+                .expect(200, function() {
+                })
         })
 
-        // it('Should reject klip with missing content', function(done) {
-        //
-        //     var klipsCollection = testRunner.db.collection('klips');
-        //     api.post(`/api/user/${testRunner.authorizedUser._id}/klip/add`).send({title:'test title'})
-        //         .set('Authorization', 'Bearer ' + testRunner.token)
-        //         .expect(500,done)
-        // })
+        it('Should reject klip with missing of empty content', function(done) {
+
+            api.put(`/api/user/${testRunner.authorizedUser._id}/klip`).send({ title: 'test title', content: '' })
+                .set('Authorization', 'Bearer ' + testRunner.token)
+                .expect(500, function() {
+                    done()
+                })
+
+        })
 
     })
 
+    describe('Remove', function() {
+
+        it('Should delete klip', function(done) {
+            let kid =''
+            new Promise(resolve => {
+
+                api.put(`/api/user/${testRunner.authorizedUser._id}/klip`).send(TestRunner.KLIP_DATA)
+                    .set('Authorization', 'Bearer ' + testRunner.token)
+                    .expect(200, function(err, res) {
+                        resolve(res.body.data._id)
+                    })
+
+            }).then((kid) => {
+
+                api.delete(`/api/user/${testRunner.authorizedUser._id}/klip/${kid}`).send()
+                    .set('Authorization', 'Bearer ' + testRunner.token)
+                    .expect(200, function(err, res) {
+                        assert.equal(res.body.data._id, kid)
+                        done()
+                    })
+
+            })
+        })
+    })
 
     describe('Update', function() {
 
