@@ -1,7 +1,7 @@
 import { JsonRes } from '../core/Util'
 import AuthModel from './AuthModel'
 import { KlipModel } from './KlipModel'
-import {event} from '../core/Event'
+import { event } from '../core/Event'
 
 /*k
  * Singleton user model
@@ -47,6 +47,7 @@ _schema.statics = {
     updateOne: updateOne,
     findOrCreate: findOrCreate,
     addKlip: addKlip,
+    deleteKlip: deleteKlip,
 }
 
 /**
@@ -54,26 +55,43 @@ _schema.statics = {
  */
 _schema.methods = {
     addOne: addOne,
-    deleteOne: deleteOne
 }
 
 let UserModel = mongoose.model(_modelName, _schema, 'users')
 
-function addKlip(record = null, uid=null) {
+
+function deleteKlip(uid = null, kid = null): Promise<any> {
+
+    if (!(uid && kid))
+        return Promise.reject('uid not kid not found')
+
+    return new Promise((resolve, reject) => {
+        KlipModel.findOne({ _id: kid }).then((result) => {
+            return result.remove()
+        }).then(data => {
+            if (data._id.toString() === kid)
+                return resolve(data)
+            else return reject('some error')
+        })
+    })
+}
+
+/**
+ * [addKlip description]
+ * @param  {[type]}       record=null [description]
+ * @param  {[type]}       uid=null    [description]
+ * @return {Promise<any>}             [description]
+ */
+function addKlip(record = null, uid = null): Promise<any> {
 
     if (!record)
         return Promise.reject('Record not found')
 
-//uid route param does not equal to current user
-    if (!uid && uid !== AuthModel.getCurrentUser()._id.toString())
-        return Promise.reject('User not found')
-
-    //TODO:140 perform a current user check against uid
     return new Promise((resolve, reject) => {
         KlipModel.addOne({ uid: uid, content: record.content, title: record.title }).then((result) => {
-            // let KlipEvent = new Event()
-            event.emit('klipAdded', result)
-            resolve(result)
+            if (!result) return reject('No record found')
+            // TODO: maybe move that to the route level
+            return resolve(result)
         })
     })
 

@@ -41,8 +41,8 @@ export default class UserRoute {
     }
 
     static getKlips(req, res, next) {
-        // TODO need test cases move to user model
 
+        // TODO need test cases move to user model
         return KlipModel.find({ uid: req.params.uid }).sort({ last_modified: -1 }).then((response) => {
             if (!response)
                 return new JsonRes(res).fail('fail to fetch getKlip')
@@ -64,7 +64,9 @@ export default class UserRoute {
         if (!req.body.content.trim())
             return next('missing content')
 
-        UserModel.addKlip(record,uid ).then(result => {
+        UserModel.addKlip(record, uid).then(result => {
+            //scoket fire
+            event.emit('klipAdded', result)
             return new JsonRes(res).success(result)
         }
         ).catch(e => next(e))
@@ -73,14 +75,9 @@ export default class UserRoute {
 
     static deleteKlip(req, res, next) {
         let kid = req.params.kid
-        let uid = AuthModel.getCurrentUser()._id
+        let uid = req.params.uid
 
-        //TODO move to middleware
-        if (req.params.uid !== uid.toString())
-            return next('not authorized')
-
-        KlipModel.findOne({ _id: kid }).then((result) => {
-            result.remove()
+        UserModel.deleteKlip(uid, kid).then(result => {
             return new JsonRes(res).success(result)
         }).catch(e => next(e))
 

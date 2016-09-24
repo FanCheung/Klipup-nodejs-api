@@ -158,12 +158,12 @@ class AuthRoute {
 
     public authenticateAcl(req, res, next) {
         //TODO verfiy with token maybe
-        if (req.params.uid && req.params.uid == AuthModel.getCurrentUser()._id) {
+        if (req.params.uid && req.params.uid === AuthModel.getCurrentUser()._id.toString()) {
             next()
         }
         else
             next(new Error('not powerful enough'))
-    }
+}
 
     public activate(req, res, next) {
         let {email, token} = req.query

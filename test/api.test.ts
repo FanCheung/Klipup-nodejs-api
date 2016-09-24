@@ -211,10 +211,10 @@ describe.only('Klips CRUD', function() {
                     })
 
             }).then((kid) => {
-
                 api.delete(`/api/user/${testRunner.authorizedUser._id}/klip/${kid}`).send()
                     .set('Authorization', 'Bearer ' + testRunner.token)
                     .expect(200, function(err, res) {
+console.log('scucesfasdfaf')
                         assert.equal(res.body.data._id, kid)
                         done()
                     })
