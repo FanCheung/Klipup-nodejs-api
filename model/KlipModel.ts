@@ -8,6 +8,7 @@ let _schema = new mongoose.Schema({
     created_date: Date,
     tags: [String],
 })
+
 let _modelName = 'KlipModel'
 
 _schema.statics = {

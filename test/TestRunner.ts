@@ -83,6 +83,7 @@ export class TestRunner {
                     return resolve(result.body.data.token)
                 })
             })
+
             done()
             return Promise.resolve(this.token)
 

@@ -234,8 +234,24 @@ describe('Klips CRUD', function() {
 })
 
 
-describe('User Profile', function() {
-    it('should update user profile')
+describe.only('User Profile', function() {
+
+    let testRunner = new TestRunner()
+    before('Authenticate', function(done) {
+        testRunner.login(done)
+    })
+
+    it('should update user profile', function(done) {
+        new Promise(resolve => {
+            api.get(`/api/user/${testRunner.authorizedUser._id}/profile`).send(TestRunner.KLIP_DATA)
+                .set('Authorization', 'Bearer ' + testRunner.token)
+                .expect(200, function(err, res) {
+                    console.log(res.body)
+                    done()
+                    // resolve(res.body.data._id)
+                })
+        })
+    })
     it('Should update the password and re issue a token')
 })
 

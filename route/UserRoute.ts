@@ -16,15 +16,17 @@ export default class UserRoute {
      */
     static getProfile(req, res, next) {
         UserModel.findOne({ _id: req.params.uid }).then((response) => {
-            new JsonRes(res).success(response)
-            next()
+            return new JsonRes(res).success(response)
         }).catch((e) => {
             next(e)
         })
     }
 
-    static updateProfile(req, res, next) {
-        next()
+     static async updateProfile(req, res, next) {
+        let {uid, profile} = req.body
+        UserModel.updateProfile(uid, profile).then(response => {
+            return new JsonRes(res).success(response)
+        }).catch(e => next(e))
     }
 
 
