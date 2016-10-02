@@ -48,6 +48,7 @@ _schema.statics = {
     findOrCreate: findOrCreate,
     addKlip: addKlip,
     deleteKlip: deleteKlip,
+    updateProfile: updateProfile,
 }
 
 /**
@@ -59,6 +60,22 @@ _schema.methods = {
 
 let UserModel = mongoose.model(_modelName, _schema, 'users')
 
+function  updateProfile(uid = null, fields = null) {
+
+    if (!uid || !fields)
+        return Promise.reject('uid or fields not found')
+
+    return new Promise((resolve, reject) => {
+        UserModel.find({ _id: uid }).then(record => {
+            if (!record) return reject('User not found')
+            record = Object.assign(record, fields)
+            return record.save()
+        }).then(record => {
+            return resolve(record)
+        })
+    })
+
+}
 
 function deleteKlip(uid = null, kid = null): Promise<any> {
 

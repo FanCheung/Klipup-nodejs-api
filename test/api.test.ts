@@ -37,11 +37,7 @@ function connectDb(DB_URL = 'mongodb://localhost:27017/klipup') {
 
 describe('Db tests', function() {
 
-    before(function(done) {
-        // clean db here
-    })
 
-    it('should clear the db', function() { })
 
     it('should not return error object', function(done) {
         MongoClient.connect('mongodb://localhost:27017/klipup', function(err, db) {
@@ -135,7 +131,7 @@ describe('Forgot  and reset password', function() {
 * [describe description]
 */
 
-describe.only('Klips CRUD', function() {
+describe('Klips CRUD', function() {
 
     let testRunner = new TestRunner()
     before('Authenticate', function(done) {
@@ -201,7 +197,7 @@ describe.only('Klips CRUD', function() {
     describe('Remove', function() {
 
         it('Should delete klip', function(done) {
-            let kid =''
+            let kid = ''
             new Promise(resolve => {
 
                 api.put(`/api/user/${testRunner.authorizedUser._id}/klip`).send(TestRunner.KLIP_DATA)
@@ -214,7 +210,6 @@ describe.only('Klips CRUD', function() {
                 api.delete(`/api/user/${testRunner.authorizedUser._id}/klip/${kid}`).send()
                     .set('Authorization', 'Bearer ' + testRunner.token)
                     .expect(200, function(err, res) {
-console.log('scucesfasdfaf')
                         assert.equal(res.body.data._id, kid)
                         done()
                     })
@@ -223,16 +218,11 @@ console.log('scucesfasdfaf')
         })
     })
 
-    describe('Update', function() {
-
-        it('Should update a record with provided id')
-
-        it('Should fail to update with an nonexisting id')
-
-        it('Should fail to update with empty content')
-
-    })
-
+    // describe('Update', function() {
+    //     it('Should update a record with provided id')
+    //     it('Should fail to update with an nonexisting id')
+    //     it('Should fail to update with empty content')
+    // })
 
 
     after(function(done) {
@@ -243,9 +233,14 @@ console.log('scucesfasdfaf')
 
 })
 
+
+describe('User Profile', function() {
+    it('should update user profile')
+    it('Should update the password and re issue a token')
+})
+
 describe('tidy up', function() {
     it('Should close db connection', function(done) {
-        db.close()
         done()
     })
 })

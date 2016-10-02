@@ -20,6 +20,10 @@ module Route {
         router.delete('/api/user/:uid/klip/:kid', AuthRoute.authenticateToken, AuthRoute.authenticateAcl, UserRoute.deleteKlip)
 
         router.get('/api/user/:uid/klips/',  AuthRoute.authenticateToken, UserRoute.getKlips)
+
+        router.get('/api/user/:uid/profile/',  AuthRoute.authenticateToken, UserRoute.getProfile)
+        router.post('/api/user/:uid/profile/',  AuthRoute.authenticateToken, UserRoute.updateProfile)
+
         router.post('/api/login', AuthRoute.login)
         router.post('/api/register', AuthRoute.register)
         router.post('/api/reset-password/',AuthRoute.resetPassword)

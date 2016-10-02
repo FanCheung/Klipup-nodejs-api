@@ -23,6 +23,11 @@ export default class UserRoute {
         })
     }
 
+    static updateProfile(req, res, next) {
+        next()
+    }
+
+
     static verifyEmail(res, req, next) {
         if (req.query.token) {
         }
