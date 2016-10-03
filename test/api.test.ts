@@ -103,6 +103,7 @@ describe('Registration', function() {
 
 describe('Login', function() {
 
+    let token = ''
     it('Should return unauthorize status with invalid login', function(done) {
         api.post('/api/login').send({ username: 'invalid', password: 'invalid' }).expect(401, done)
     })
@@ -111,10 +112,17 @@ describe('Login', function() {
         api.post('/api/login').send({ username: USER_DATA.email, password: USER_DATA.password }).expect(200, function(err, result) {
             assert(result.body.data.token, 'jwt token not available')
             assert(result.body.data.uid, 'uid not available')
+            token = result.body.data.token
             done()
         })
     })
 
+    it('login again with same data should get identical token, so multiple device login can share the same stateless credential', function(done) {
+        api.post('/api/login').send({ username: USER_DATA.email, password: USER_DATA.password }).expect(200, function(err, result) {
+            assert.equal(result.body.data.token, token)
+            done()
+        })
+    })
 })
 
 describe('Forgot  and reset password', function() {

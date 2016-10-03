@@ -81,6 +81,7 @@ class AuthModel {
 
     /**
      * [getLocalStrategy description]
+     * TODO: need some refactoring
      * @return {Promise} [description]
      */
     public getLocalStrategy() {
@@ -106,8 +107,12 @@ class AuthModel {
                 if (require('bcrypt').compareSync(password, result.password)) {
 
                     // if there's an existing token and valid
-                    // TODO : verify this token with jwt
-                    if (result.token) return Promise.resolve(result)
+                    if (result.token)
+                        return new Promise((resolve, reject) => {
+                            return this.verifyToken(result.token).then(uid => {
+                                resolve(result)
+                            })
+                        })
 
                     // else re issue the token
                     result.token = this.issueToken({ sub: result._id }, 3434000)
@@ -116,7 +121,7 @@ class AuthModel {
 
                 return Promise.reject('email or password doesnt match')
 
-            }).then((user) => {
+            }).then(user => {
                 // pass to passport.authenticate
                 return done(null, user)
 
