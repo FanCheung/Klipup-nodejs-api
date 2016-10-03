@@ -14,22 +14,36 @@ export default class UserRoute {
      * Native mongoose findOne method
      * @returns {void}
      */
-    static getProfile(req, res, next) {
-        UserModel.findOne({ _id: req.params.uid }).then((response) => {
+    static async getProfile(req, res, next) {
+        try {
+            let response = await UserModel.getProfile(req.params.uid)
             return new JsonRes(res).success(response)
-        }).catch((e) => {
-            next(e)
-        })
+        } catch (e) {
+            return next(e)
+        }
     }
 
-     static async updateProfile(req, res, next) {
+/**
+ * [updateProfile description]
+ * @param  {[type]}   req  [description]
+ * @param  {[type]}   res  [description]
+ * @param  {Function} next [description]
+ * @return {[type]}        [description]
+ */
+    static async updateProfile(req, res, next) {
         let {uid, profile} = req.body
         UserModel.updateProfile(uid, profile).then(response => {
             return new JsonRes(res).success(response)
         }).catch(e => next(e))
     }
 
-
+/**
+ * [verifyEmail description]
+ * @param  {[type]}   res  [description]
+ * @param  {[type]}   req  [description]
+ * @param  {Function} next [description]
+ * @return {[type]}        [description]
+ */
     static verifyEmail(res, req, next) {
         if (req.query.token) {
         }

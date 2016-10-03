@@ -233,7 +233,6 @@ describe('Klips CRUD', function() {
 
 })
 
-
 describe.only('User Profile', function() {
 
     let testRunner = new TestRunner()
@@ -252,7 +251,9 @@ describe.only('User Profile', function() {
                 })
         })
     })
+
     it('Should update the password and re issue a token')
+
 })
 
 describe('tidy up', function() {
