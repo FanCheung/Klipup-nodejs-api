@@ -189,7 +189,6 @@ describe('Klips CRUD', function() {
                 .expect(500, function() {
                     done()
                 })
-
         })
 
     })
@@ -198,8 +197,8 @@ describe('Klips CRUD', function() {
 
         it('Should delete klip', function(done) {
             let kid = ''
-            new Promise(resolve => {
 
+            new Promise(resolve => {
                 api.put(`/api/user/${testRunner.authorizedUser._id}/klip`).send(TestRunner.KLIP_DATA)
                     .set('Authorization', 'Bearer ' + testRunner.token)
                     .expect(200, function(err, res) {
@@ -213,17 +212,9 @@ describe('Klips CRUD', function() {
                         assert.equal(res.body.data._id, kid)
                         done()
                     })
-
             })
         })
     })
-
-    // describe('Update', function() {
-    //     it('Should update a record with provided id')
-    //     it('Should fail to update with an nonexisting id')
-    //     it('Should fail to update with empty content')
-    // })
-
 
     after(function(done) {
         // disconnect io clients after each test
@@ -233,26 +224,37 @@ describe('Klips CRUD', function() {
 
 })
 
-describe.only('User Profile', function() {
+describe('User Profile', function() {
 
     let testRunner = new TestRunner()
     before('Authenticate', function(done) {
         testRunner.login(done)
     })
 
-    it('should update user profile', function(done) {
-        new Promise(resolve => {
-            api.get(`/api/user/${testRunner.authorizedUser._id}/profile`).send(TestRunner.KLIP_DATA)
-                .set('Authorization', 'Bearer ' + testRunner.token)
-                .expect(200, function(err, res) {
-                    console.log(res.body)
-                    done()
-                    // resolve(res.body.data._id)
-                })
-        })
+    it('Get user profile', function(done) {
+        api.get(`/api/user/${testRunner.authorizedUser._id}/profile`)
+            .set('Authorization', 'Bearer ' + testRunner.token)
+            .expect(200, function(err, res) {
+                assert(!err)
+                assert.equal(res.body.data.email, testRunner.authorizedUser.email)
+                done()
+            })
     })
 
-    it('Should update the password and re issue a token')
+    it('Update some fields', function(done) {
+        let newEmail = 'new@new.com',
+            newDisplayName = 'new display name',
+            newGender = 'male'
+
+        api.post(`/api/user/${testRunner.authorizedUser._id}/profile`).send({ email: newEmail, display_name: newDisplayName, gender: newGender })
+            .set('Authorization', 'Bearer ' + testRunner.token)
+            .expect(200, function(err, res) {
+                assert.equal(res.body.data.email, newEmail)
+                assert.equal(res.body.data.display_name, newDisplayName)
+                assert.equal(res.body.data.gender, newGender)
+                done()
+            })
+    })
 
 })
 

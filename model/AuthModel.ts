@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken'
-import {CONFIG} from '../core/Main'
+import { CONFIG } from '../core/Main'
 import * as UserModel from '../model/UserModel'
 import * as LocalStrategy from 'passport-local'
 import * as FacebookStrategy from 'passport-facebook'
@@ -56,16 +56,16 @@ class AuthModel {
                         'locale': json.locale
                     }).addOne().then((result) => {
 
-                        // TODO:100 move to Auth model
                         let token = this.issueToken({ sub: result._id })
                         this.saveToken(result, token)
                     }).catch((error) => {
+
                         console.log('error :', error)
                     })
                     return done(null, profile)
                     // when there are existing user
                 } else {
-                    // TODO:110 move to Auth model
+
                     let token = this.issueToken({ sub: result._id })
                     this.saveToken(result, token)
                     return done(null, result)
@@ -101,11 +101,19 @@ class AuthModel {
                 return result
 
             }).then((result: any) => {
-                //see if password matches
+
+                //see if login success
                 if (require('bcrypt').compareSync(password, result.password)) {
+
+                    // if there's an existing token and valid
+                    // TODO : verify this token with jwt
+                    if (result.token) return Promise.resolve(result)
+
+                    // else re issue the token
                     result.token = this.issueToken({ sub: result._id }, 3434000)
                     return Promise.resolve(result.save())
                 }
+
                 return Promise.reject('email or password doesnt match')
 
             }).then((user) => {

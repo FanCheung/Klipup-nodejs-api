@@ -23,27 +23,30 @@ export default class UserRoute {
         }
     }
 
-/**
- * [updateProfile description]
- * @param  {[type]}   req  [description]
- * @param  {[type]}   res  [description]
- * @param  {Function} next [description]
- * @return {[type]}        [description]
- */
+    /**
+     * [updateProfile description]
+     * @param  {[type]}   req  [description]
+     * @param  {[type]}   res  [description]
+     * @param  {Function} next [description]
+     * @return {[type]}        [description]
+     */
     static async updateProfile(req, res, next) {
-        let {uid, profile} = req.body
+
+        let profile = req.body,
+         uid = req.params.uid
+
         UserModel.updateProfile(uid, profile).then(response => {
             return new JsonRes(res).success(response)
         }).catch(e => next(e))
     }
 
-/**
- * [verifyEmail description]
- * @param  {[type]}   res  [description]
- * @param  {[type]}   req  [description]
- * @param  {Function} next [description]
- * @return {[type]}        [description]
- */
+    /**
+     * [verifyEmail description]
+     * @param  {[type]}   res  [description]
+     * @param  {[type]}   req  [description]
+     * @param  {Function} next [description]
+     * @return {[type]}        [description]
+     */
     static verifyEmail(res, req, next) {
         if (req.query.token) {
         }

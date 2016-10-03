@@ -1,6 +1,6 @@
 import { event } from './Event'
 var socketioJwt = require('socketio-jwt')
-import {CONFIG} from './Main'
+import { CONFIG } from './Main'
 
 class SocketServer {
 
@@ -19,8 +19,15 @@ class SocketServer {
             secret: CONFIG.AUTH.SECRET_KEY,
             timeout: 15000 // 15 seconds to send the authentication message
         })).on('authenticated', (socket) => {
+
+            //add a single klip
             event.on('klipAdded', function(record) {
                 socket.emit('klipAdded', record)
+            })
+
+            // remove a single klip
+            event.on('klipdeleted', function(record) {
+
             })
 
             console.log(socket.decoded_token)

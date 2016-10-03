@@ -48,7 +48,7 @@ _schema.statics = {
     findOrCreate: findOrCreate,
     addKlip: addKlip,
     deleteKlip: deleteKlip,
-getProfile:getProfile,
+    getProfile: getProfile,
     updateProfile: updateProfile,
 
 }
@@ -63,15 +63,25 @@ _schema.methods = {
 let UserModel = mongoose.model(_modelName, _schema, 'users')
 
 async function updateProfile(uid = null, fields = null) {
-    if (!uid || !fields)
+    if (!uid || !Object.keys(fields))
         return Promise.reject('uid or fields not found')
 
     return new Promise((resolve, reject) => {
-        UserModel.find({ _id: uid }).then(record => {
+        UserModel.findOne({ _id: uid }).then(record => {
             if (!record) return reject('User not found')
-            record = Object.assign(record, fields)
-            return record.save()
 
+            // assigning value
+            // TODO: santize and validation
+            record.display_name = fields.display_name || record.display_name
+            record.email = fields.email || record.email
+
+            // make sure there's password
+            // TODO: need to reset and resend token
+            if (fields.password && fields.password.length)
+                record.password = fields.password
+            record.gender = fields.gender || record.gender
+
+            return record.save()
         }).then(record => {
             return resolve(record)
         })
@@ -115,7 +125,7 @@ function addKlip(record = null, uid = null): Promise<any> {
 
 }
 
- function getProfile(uid = null) {
+function getProfile(uid = null) {
     if (!uid) return Promise.reject('Uid is not defined')
     return UserModel.findOne({ _id: uid }).then(result => {
         if (!result) return Promise.reject('user not found')
