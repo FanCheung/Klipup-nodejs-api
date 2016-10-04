@@ -21,14 +21,29 @@ _schema.statics = {
 
 let KlipModel = mongoose.model(_modelName, _schema, 'klips')
 
+/**
+ * [addOne description]
+ * @param  {[type]} obj [description]
+ * @return {[type]}     [description]
+ */
 function addOne(obj) {
     return this.create(obj)
 }
 
+/**
+ * [getOne description]
+ * @param  {[type]} query [description]
+ * @return {[type]}       [description]
+ */
 function getOne(query) {
     return this.findOne(query)
 }
 
+/**
+ * [deleteOne description]
+ * @param  {[type]} id [description]
+ * @return {[type]}    [description]
+ */
 function deleteOne(id) {
     return this.findOne({ _id: id }).then((result) => {
         result.remove()
