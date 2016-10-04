@@ -378,10 +378,9 @@ class AuthModel {
         return UserModel.findOne({ _id: uid }).then((result) => {
             if (result) {
                 this._currentUser = result
-                console.warn('thiscurrent user', this._currentUser)
+                return result
             }
-            else
-                Promise.reject(new Error('No User found'))
+            return Promise.reject(new Error('No User found'))
         })
     }
 

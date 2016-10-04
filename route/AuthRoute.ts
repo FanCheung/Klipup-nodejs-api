@@ -75,6 +75,7 @@ class AuthRoute {
         })
     }
 
+    //TODO: need major refactoring
     //middleware
     public authenticateToken(req, res, next) {
         new Promise((resolve, reject) => {
@@ -88,12 +89,13 @@ class AuthRoute {
                     if (user && user._id.toString() == payload.sub) {
                         return next()
                     }
-                    AuthModel.setCurrentUser(payload.sub).then(result => {
-                        next()
-                    })
+                    return AuthModel.setCurrentUser(payload.sub)
                 })
             })
-        }).then((error) => console.log('assed?')).catch((e) => {
+        }).then(result => {
+// pass down the route all good
+            next()
+        }).catch((e) => {
             res.json({ fail: true })
             next(e)
         }).finally(() => {
@@ -163,7 +165,7 @@ class AuthRoute {
         }
         else
             next(new Error('not powerful enough'))
-}
+    }
 
     public activate(req, res, next) {
         let {email, token} = req.query
