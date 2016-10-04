@@ -129,7 +129,14 @@ function getProfile(uid = null) {
     if (!uid) return Promise.reject('Uid is not defined')
     return UserModel.findOne({ _id: uid }).then(result => {
         if (!result) return Promise.reject('user not found')
-        return result
+        let user = result
+
+// remove sensitive user information
+         user.password=undefined
+         user.email_token=undefined
+         user.token=undefined
+console.log(user)
+        return user
     })
 }
 
