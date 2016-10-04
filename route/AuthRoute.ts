@@ -89,17 +89,15 @@ class AuthRoute {
                     if (user && user._id.toString() == payload.sub) {
                         return next()
                     }
-                    return AuthModel.setCurrentUser(payload.sub)
+                    return resolve(AuthModel.setCurrentUser(payload.sub))
                 })
             })
         }).then(result => {
-// pass down the route all good
+            // pass down the route all good
             next()
         }).catch((e) => {
-            res.json({ fail: true })
+console.log('akdfasdjfaksdjaksdfj--------------------')
             next(e)
-        }).finally(() => {
-            next()
         })
     }
     /**
