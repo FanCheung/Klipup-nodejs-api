@@ -23,6 +23,7 @@ export default class UserRoute {
         }
     }
 
+
     /**
      * [updateProfile description]
      * @param  {[type]}   req  [description]
@@ -99,6 +100,7 @@ export default class UserRoute {
         let uid = req.params.uid
 
         UserModel.deleteKlip(uid, kid).then(result => {
+            event.emit('klipDeleted',result)
             return new JsonRes(res).success(result)
         }).catch(e => next(e))
 

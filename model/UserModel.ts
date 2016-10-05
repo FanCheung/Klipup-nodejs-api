@@ -131,11 +131,10 @@ function getProfile(uid = null) {
         if (!result) return Promise.reject('user not found')
         let user = result
 
-// remove sensitive user information
-         user.password=undefined
-         user.email_token=undefined
-         user.token=undefined
-console.log(user)
+        // remove sensitive user information
+        user.password = undefined
+        user.email_token = undefined
+        user.token = undefined
         return user
     })
 }

@@ -19,7 +19,7 @@ module Route {
         router.put('/api/user/:uid/klip', AuthRoute.authenticateToken, AuthRoute.authenticateAcl, UserRoute.addKlip)
         router.delete('/api/user/:uid/klip/:kid', AuthRoute.authenticateToken, AuthRoute.authenticateAcl, UserRoute.deleteKlip)
 
-        router.get('/api/user/:uid/klips/',  AuthRoute.authenticateToken, UserRoute.getKlips)
+        router.get('/api/user/:uid/klips/',  AuthRoute.authenticateToken,AuthRoute.authenticateAcl, UserRoute.getKlips)
 
         router.get('/api/user/:uid/profile/',  AuthRoute.authenticateToken, UserRoute.getProfile)
         router.post('/api/user/:uid/profile/',  AuthRoute.authenticateToken, UserRoute.updateProfile)

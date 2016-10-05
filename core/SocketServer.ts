@@ -26,8 +26,8 @@ class SocketServer {
             })
 
             // remove a single klip
-            event.on('klipdeleted', function(record) {
-
+            event.on('klipDeleted', function(record) {
+                socket.emit('klipDeleted', record)
             })
 
             console.log(socket.decoded_token)
