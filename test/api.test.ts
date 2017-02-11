@@ -50,8 +50,8 @@ describe('Db tests', function() {
 
 describe('Registration', function() {
     let db = null
-    let _users = {}
-    let _user = {}
+    let _users:any = {}
+    let _user:any = {}
     before(function(done) {
         MongoClient.connect(DB_URL, function(err, result) {
             //make db availabel for use avoid multiple connection call back
