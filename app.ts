@@ -19,9 +19,9 @@ import * as Promise from 'bluebird'
 import { Mail } from './core/Mail'
 import * as _ from 'lodash'
 import { JsonRes } from './core/Util'
-global.Promise = Promise
+declare var global;
+// global.Promise = Promise
 var chalk = require('chalk')
-
 global.log = function(text = '', color = 'white') {
     console.log(chalk['yellow'](text))
 }
@@ -36,7 +36,7 @@ class App {
     server
     constructor() {
         //plugin bluebird promise for mongoose
-        mongoose.Promise = Promise
+        mongoose.Promise = Promise;
         var app = Express()
         this.server = require('http').Server(app);
 

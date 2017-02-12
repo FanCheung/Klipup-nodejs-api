@@ -1,5 +1,6 @@
 import * as nodemailer from 'nodemailer'
-import * as CONFIG from './CONFIG';
+import {CONFIG} from '../core/Main';
+
 class Mail {
     private transporter
     private options = {

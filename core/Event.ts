@@ -1,10 +1,4 @@
 const EventEmitter =require('events')
-/**
- *
- */
-class Event extends EventEmitter{
 
-
-}
-var event=new Event()
+var event=new EventEmitter()
 export {event}

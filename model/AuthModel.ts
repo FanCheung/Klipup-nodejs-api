@@ -275,7 +275,7 @@ class AuthModel {
      */
     public forgotPassword(email = '') {
         //should type to mongoose
-        let user = {}
+        let user:any = {}
         // return erorr immediately if email not valid format
         if (!validator.isEmail(email))
             return Promise.reject(new Error('Not valid email: #{email}'))

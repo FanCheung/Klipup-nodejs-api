@@ -41,6 +41,7 @@ describe('Db tests', function() {
 
     it('should not return error object', function(done) {
         MongoClient.connect('mongodb://localhost:27017/klipup', function(err, db) {
+            console.log('-----------',err)
             expect(err).to.equal(null)
             db.close()
             done()

@@ -93,11 +93,7 @@
             _schema.error.message = obj.message
             if (obj.code)
                 _schema.error.code = obj.code
-            if (obj.reason)
-                _schema.error.reason = obj.reason
-            if (obj.errors)
-                _schema.error.errors = obj.errors
-            _schema.error.code = statusCode
+                        _schema.error.code = statusCode
 
             return this._res.json(_schema)
         }

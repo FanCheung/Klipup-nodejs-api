@@ -8,7 +8,6 @@ import { event } from '../core/Event'
  * will add another class implementation approach
  */
 var mongoose = require('mongoose')
-import * as Promise from 'bluebird'
 
 //set up schema
 let _schema = new mongoose.Schema({
