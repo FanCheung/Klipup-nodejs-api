@@ -3,6 +3,10 @@ import AuthRoute from './AuthRoute'
 import UserRoute from './UserRoute'
 import * as passport from 'passport'
 import KlipRoute from './klipRoute'
+import AuthModel from '../model/AuthModel'
+import JsonRes from '../core/JsonRes'
+import * as Rx from 'rxjs'
+
 let UserModel = require('../model/UserModel')
 const Event = require('events')
 
@@ -19,18 +23,24 @@ module Route {
         router.put('/api/user/:uid/klip', AuthRoute.authenticateToken, AuthRoute.authenticateAcl, UserRoute.addKlip)
         router.delete('/api/user/:uid/klip/:kid', AuthRoute.authenticateToken, AuthRoute.authenticateAcl, UserRoute.deleteKlip)
 
-        router.get('/api/user/:uid/klips/',  AuthRoute.authenticateToken,AuthRoute.authenticateAcl, UserRoute.getKlips)
+        router.get('/api/user/:uid/klips/', AuthRoute.authenticateToken, AuthRoute.authenticateAcl, UserRoute.getKlips)
 
-        router.get('/api/user/:uid/profile/',  AuthRoute.authenticateToken, UserRoute.getProfile)
-        router.post('/api/user/:uid/profile/',  AuthRoute.authenticateToken, UserRoute.updateProfile)
+        router.get('/api/user/:uid/profile/', AuthRoute.authenticateToken, UserRoute.getProfile)
+        router.post('/api/user/:uid/profile/', AuthRoute.authenticateToken, UserRoute.updateProfile)
 
         router.post('/api/login', AuthRoute.login)
-        router.post('/api/register', AuthRoute.register)
-        router.post('/api/reset-password/',AuthRoute.resetPassword)
-        router.post('/api/forgot-password',AuthRoute.forgotPassword)
-        router.post('/api/create-account',AuthRoute.createAccount)
+
+        router.post('/api/register', (req, res, next) => {
+AuthModel.hello()
+            // AuthModel.register$.next( {email:req.body.user_email, password:req.body.user_password} )
+            // AuthModel.register$.subscribe(value=>console.log('at route',value))
+        })
+
+        router.post('/api/reset-password/', AuthRoute.resetPassword)
+        router.post('/api/forgot-password', AuthRoute.forgotPassword)
+        router.post('/api/create-account', AuthRoute.createAccount)
         router.get('/api/auth/facebook', passport.authenticate('facebook', { scope: ['email'] }))
-      // router.post('/auth/get-token/', AuthRoute.issueToken)
+        // router.post('/auth/get-token/', AuthRoute.issueToken)
 
         router.get('/api/activate', AuthRoute.activate)
         router.get('/api/auth/get-user/', function(res, req, next) {

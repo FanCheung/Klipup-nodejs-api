@@ -36,7 +36,7 @@ class App {
     server
     constructor() {
         //plugin bluebird promise for mongoose
-        mongoose.Promise = Promise;
+        // mongoose.Promise = Promise;
         var app = Express()
         this.server = require('http').Server(app);
 

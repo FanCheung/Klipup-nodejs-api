@@ -6,6 +6,8 @@ import * as FacebookStrategy from 'passport-facebook'
 import * as passport from 'passport'
 import * as validator from 'validator'
 import { Mail } from '../core/Mail'
+import * as Rx from "rxjs"
+// import {Observable} from 'rxjs/Rx';
 
 /**
  * Handle all authentication related activities
@@ -13,8 +15,23 @@ import { Mail } from '../core/Mail'
 class AuthModel {
     private _currentUser = null
     private _expireIn = 720000
+    public register$: Rx.Subject<any>
 
-    constructor() {
+    hello() {
+console.log('--------------hello')
+this.register$=new Rx.AsyncSubject();
+var c=0;
+        var a=this.register$.map(fa => {
+            console.log('hello',c++)
+            return c;
+        })
+// this.register$.share()
+        this.register$.subscribe(value => console.log('.................', value))
+        this.register$.subscribe(value => console.log('-----------------.', value))
+        a.subscribe(value => console.log('+++++++++++++++++', value))
+        a.subscribe(value => console.log('+++++++++++++++++', value))
+
+this.register$.next('from next')
     }
 
     /**
@@ -136,8 +153,11 @@ class AuthModel {
      * @return {Promise}        [description]
      */
     public register(email, password) {
+
         // Load the bcrypt module
-        let hashedPassword = this.getPasswordHash(password)
+// Rx.Observable.of({email,password}).map()
+        let hashedPassword = Rx.Observable.of(this.getPasswordHash(password))
+
         //TODO:160 validate password and email here
         if (!(hashedPassword && email))
             return Promise.reject(new Error('password or email no good'))
@@ -275,7 +295,7 @@ class AuthModel {
      */
     public forgotPassword(email = '') {
         //should type to mongoose
-        let user:any = {}
+        let user: any = {}
         // return erorr immediately if email not valid format
         if (!validator.isEmail(email))
             return Promise.reject(new Error('Not valid email: #{email}'))

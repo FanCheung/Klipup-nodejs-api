@@ -36,12 +36,8 @@ function connectDb(DB_URL = 'mongodb://localhost:27017/klipup') {
 
 
 describe('Db tests', function() {
-
-
-
     it('should not return error object', function(done) {
         MongoClient.connect('mongodb://localhost:27017/klipup', function(err, db) {
-            console.log('-----------',err)
             expect(err).to.equal(null)
             db.close()
             done()
@@ -64,7 +60,7 @@ describe('Registration', function() {
         })
     })
 
-    it('Should register a new user and create a user record in db',
+    it.only('Should register a new user and create a user record in db',
         function(done) {
             api.post('/api/register').send({ user_email: USER_DATA.email, user_password: USER_DATA.password }).expect(200, function(error, result) {
                 // should return user object
@@ -213,7 +209,6 @@ describe('Klips CRUD', function() {
                     .expect(200, function(err, res) {
                         resolve(res.body.data._id)
                     })
-
             }).then((kid) => {
                 api.delete(`/api/user/${testRunner.authorizedUser._id}/klip/${kid}`).send()
                     .set('Authorization', 'Bearer ' + testRunner.token)

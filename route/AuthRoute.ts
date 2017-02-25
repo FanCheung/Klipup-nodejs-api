@@ -11,8 +11,11 @@ import * as Promise from 'bluebird'
 import JsonRes from '../core/JsonRes'
 import * as LocalStrategy from 'passport-local'
 import * as mongoose from 'mongoose'
+import * as Rx from 'rxjs'
 
 class AuthRoute {
+
+    public register$: any
     constructor() {
         //TODO:90 move facebook strategy to AuthModel
         this.setUpStrategy()
@@ -36,7 +39,7 @@ class AuthRoute {
     public login(req, res, next) {
 
         //response coming from passport strategy
-        passport.authenticate('local', { session: false }, function(err, user, info) {
+        passport.authenticate('local', { session: false }, function (err, user, info) {
             //TODO check if activation code is still there
             if (!user)
                 return new JsonRes(res).fail({ message: 'Username or password no match' }, 401)
@@ -80,7 +83,7 @@ class AuthRoute {
     public authenticateToken(req, res, next) {
         new Promise((resolve, reject) => {
             AuthModel.extractToken(req).then((token) => {
-                return jwt.verify(token, CONFIG.AUTH.SECRET_KEY, function(err, payload) {
+                return jwt.verify(token, CONFIG.AUTH.SECRET_KEY, function (err, payload) {
                     if (err)
                         return reject(new Error(err))
                     //if current user is equal id extracted
@@ -96,7 +99,6 @@ class AuthRoute {
             // pass down the route all good
             next()
         }).catch((e) => {
-console.log('akdfasdjfaksdjaksdfj--------------------')
             next(e)
         })
     }

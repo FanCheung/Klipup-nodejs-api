@@ -5,32 +5,9 @@
     "declaration": false,
     "noImplicitAny": false,
     "removeComments": true,
-    "noLib": false
+    "noLib": false,
+    "watch":true
   },
-  "exclude": [
-  ],
-  "files": [
-    "typings/index.d.ts",
-    "app.ts",
-    "test/api.test.ts",
-    "test/TestRunner.ts",
-    "core/CONFIG.ts",
-    "core/Db.ts",
-    "core/Mail.ts",
-    "core/Error.ts",
-    "core/JsonRes.ts",
-    "core/Singleton.ts",
-    "core/SocketServer.ts",
-    "core/Util.ts",
-    "core/Main.ts",
-    "model/AuthModel.ts",
-    "model/KlipModel.ts",
-    "model/UserModel.ts",
-    "Registry.ts",
-    "route/AuthRoute.ts",
-    "route/Home.ts",
-    "route/KlipRoute.ts",
-    "route/Route.ts",
-    "route/UserRoute.ts"
-  ]
-}
+  "compileOnSave": true
+
+  }
