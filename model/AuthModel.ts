@@ -13,26 +13,9 @@ import * as Rx from "rxjs"
  * Handle all authentication related activities
  */
 class AuthModel {
+
     private _currentUser = null
     private _expireIn = 720000
-    public register$: Rx.Subject<any>
-
-    hello() {
-console.log('--------------hello')
-this.register$=new Rx.AsyncSubject();
-var c=0;
-        var a=this.register$.map(fa => {
-            console.log('hello',c++)
-            return c;
-        })
-// this.register$.share()
-        this.register$.subscribe(value => console.log('.................', value))
-        this.register$.subscribe(value => console.log('-----------------.', value))
-        a.subscribe(value => console.log('+++++++++++++++++', value))
-        a.subscribe(value => console.log('+++++++++++++++++', value))
-
-this.register$.next('from next')
-    }
 
     /**
      * Issue token
@@ -89,7 +72,6 @@ this.register$.next('from next')
                 }
 
             }).catch((error) => {
-                console.log(error)
                 return done(error, profile)
             })
         })
@@ -153,37 +135,34 @@ this.register$.next('from next')
      * @return {Promise}        [description]
      */
     public register(email, password) {
-
-        // Load the bcrypt module
-// Rx.Observable.of({email,password}).map()
-        let hashedPassword = Rx.Observable.of(this.getPasswordHash(password))
-
-        //TODO:160 validate password and email here
+        let hashedPassword = this.getPasswordHash(password)
         if (!(hashedPassword && email))
-            return Promise.reject(new Error('password or email no good'))
-        return UserModel.findOne({ email: email }).then((user) => {
+            return Rx.Observable.throw(new Error('password or email no good'))
+
+        return Rx.Observable.fromPromise(UserModel.findOne({ email: email }
+        )).flatMap(user => {
             if (user)
-                return Promise.reject(new Error('User already exist'))
+                return Rx.Observable.throw(new Error('User already exist'))
             return this.getEmailHash()
-        }).then((token) => {
-            let emailToken = token
+        }).flatMap((emailHash) => {
             let emailExpires = Date.now() + 3600000
+
             //Move to user model
             //promise thennable
-            return new UserModel({
+            return Rx.Observable.fromPromise(new UserModel({
                 'email': email,
                 'password': hashedPassword,
-                'email_token': emailToken,
+                'email_token': emailHash,
                 'email_expires': emailExpires,
                 'status': 'require_email_verify'
-            }).addOne()
-        }).then((data) => {
+            }).addOne())
+
+        }).flatMap((data) => {
             // Send email here
             return this.sendMail('ACTIVATION', data.email, data.email_token)
-        }).then((res) => {
-            return res
         })
     }
+
 
     /**
      * [sendMail description]
@@ -410,7 +389,7 @@ this.register$.next('from next')
      */
     public getEmailHash() {
         return new Promise((resolve, reject) => {
-            require('crypto').randomBytes(20, function(err, buf) {
+            require('crypto').randomBytes(20, function (err, buf) {
                 resolve(buf.toString('hex'))
             })
         })
@@ -444,7 +423,7 @@ this.register$.next('from next')
      */
     public verifyToken(token) {
         return new Promise((resolve, reject) => {
-            jwt.verify(token, CONFIG.AUTH.SECRET_KEY, function(err, payload) {
+            jwt.verify(token, CONFIG.AUTH.SECRET_KEY, function (err, payload) {
                 if (err) {
                     // return Promise.reject(new Error(err))
                     return reject(new Error(err))

@@ -29,12 +29,7 @@ module Route {
         router.post('/api/user/:uid/profile/', AuthRoute.authenticateToken, UserRoute.updateProfile)
 
         router.post('/api/login', AuthRoute.login)
-
-        router.post('/api/register', (req, res, next) => {
-AuthModel.hello()
-            // AuthModel.register$.next( {email:req.body.user_email, password:req.body.user_password} )
-            // AuthModel.register$.subscribe(value=>console.log('at route',value))
-        })
+        router.post('/api/register',AuthRoute.register) 
 
         router.post('/api/reset-password/', AuthRoute.resetPassword)
         router.post('/api/forgot-password', AuthRoute.forgotPassword)
